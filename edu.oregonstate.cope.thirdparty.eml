@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inheritJdk="true">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty"/>
+	<lib name="commons-net-3.3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-net-3.3.jar!/"/>
+	</lib>
+	<lib name="quartz-1.8.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/quartz-1.8.6.jar!/"/>
+	</lib>
+	<lib name="commons-vfs2-2.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-vfs2-2.0.jar!/"/>
+	</lib>
+	<lib name="jsch-0.1.50.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/jsch-0.1.50.jar!/"/>
+	</lib>
+	<lib name="commons-io-1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-io-1.4.jar!/"/>
+	</lib>
+	<lib name="commons-codec-1.8.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-codec-1.8.jar!/"/>
+	</lib>
+	<lib name="json-simple-1.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/json-simple-1.1.1.jar!/"/>
+	</lib>
+	<lib name="logback-classic-1.0.13.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-classic-1.0.13.jar!/"/>
+	</lib>
+	<lib name="logback-core-1.0.13.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-core-1.0.13.jar!/"/>
+	</lib>
+	<lib name="slf4j-api-1.7.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/slf4j-api-1.7.5.jar!/"/>
+	</lib>
+</component>

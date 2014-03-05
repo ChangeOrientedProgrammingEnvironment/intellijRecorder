@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component LANGUAGE_LEVEL="JDK_1_7" inheritJdk="true">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.clientrecorder"/>
+</component>

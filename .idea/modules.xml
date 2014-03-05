@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/edu.oregonstate.cope.clientrecorder.iml" filepath="$PROJECT_DIR$/edu.oregonstate.cope.clientrecorder.iml" />
       <module fileurl="file://$PROJECT_DIR$/edu.oregonstate.cope.intellij.recorder/edu.oregonstate.cope.intellij.recorder.iml" filepath="$PROJECT_DIR$/edu.oregonstate.cope.intellij.recorder/edu.oregonstate.cope.intellij.recorder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/edu.oregonstate.cope.thirdparty.iml" filepath="$PROJECT_DIR$/edu.oregonstate.cope.thirdparty.iml" />
     </modules>
   </component>
 </project>
