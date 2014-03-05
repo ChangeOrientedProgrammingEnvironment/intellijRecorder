@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.EditorFactoryEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,19 +12,31 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EditorFactoryListener implements com.intellij.openapi.editor.event.EditorFactoryListener {
 
+    private ClientRecorder recorder;
+
+    public EditorFactoryListener(ClientRecorder recorder) {
+        this.recorder = recorder;
+    }
 
     @Override
     public void editorCreated(@NotNull EditorFactoryEvent event) {
-        VirtualFile baseDir = event.getEditor().getProject().getBaseDir();
+        String filePath = getPathOfAffectedFile(event);
         Document document = event.getEditor().getDocument();
-        VirtualFile file = FileDocumentManager.getInstance().getFile(document);
-        String filePath = file.getCanonicalPath();
-        document.addDocumentListener(new DocumentListener(filePath));
+        document.addDocumentListener(new DocumentListener(filePath, recorder));
 
-        System.out.println("Editor opened: " + filePath);
+        recorder.recordFileOpen(filePath);
+    }
+
+    private String getPathOfAffectedFile(EditorFactoryEvent event) {
+        VirtualFile baseDir = event.getEditor().getProject().getBaseDir();
+        VirtualFile file = FileDocumentManager.getInstance().getFile(event.getEditor().getDocument());
+        return file.getCanonicalPath();
     }
 
     @Override
     public void editorReleased(@NotNull EditorFactoryEvent event) {
+        String filePath = getPathOfAffectedFile(event);
+
+        recorder.recordFileClose(filePath);
     }
 }

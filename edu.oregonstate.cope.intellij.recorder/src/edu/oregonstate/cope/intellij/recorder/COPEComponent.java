@@ -2,6 +2,10 @@ package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import edu.oregonstate.cope.clientRecorder.ChangePersister;
+import edu.oregonstate.cope.clientRecorder.ClientRecorder;
+import edu.oregonstate.cope.clientRecorder.fileOps.EventFilesProvider;
+import edu.oregonstate.cope.clientRecorder.fileOps.SimpleFileProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,11 +13,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class COPEComponent implements ApplicationComponent {
 
+    private ClientRecorder recorder;
+
     public COPEComponent() {
     }
 
     public void initComponent() {
-        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener());
+        ChangePersister changePersister = ChangePersister.instance();
+        changePersister.setFileManager(new SimpleFileProvider("./test.json"));
+
+        recorder = new ClientRecorder();
+        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(recorder));
     }
 
     public void disposeComponent() {

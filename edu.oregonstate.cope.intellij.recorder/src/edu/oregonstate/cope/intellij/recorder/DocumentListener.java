@@ -1,6 +1,8 @@
 package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.openapi.editor.event.DocumentEvent;
+import edu.oregonstate.cope.clientRecorder.ChangeOrigin;
+import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 
 /**
  * Created by caius on 3/3/14.
@@ -8,9 +10,11 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 public class DocumentListener implements com.intellij.openapi.editor.event.DocumentListener {
 
     private String filePath;
+    private ClientRecorder recorder;
 
-    public DocumentListener(String filePath) {
+    public DocumentListener(String filePath, ClientRecorder recorder) {
         this.filePath = filePath;
+        this.recorder = recorder;
     }
 
     @Override
@@ -23,6 +27,6 @@ public class DocumentListener implements com.intellij.openapi.editor.event.Docum
         int length = event.getOldLength();
         CharSequence text = event.getNewFragment();
 
-        System.out.println("In file: " + filePath + ", at " + offset + ", of size " + length + " was added: " + text.toString());
+        recorder.recordTextChange(text.toString(), offset, length, filePath, ChangeOrigin.USER);
     }
 }
