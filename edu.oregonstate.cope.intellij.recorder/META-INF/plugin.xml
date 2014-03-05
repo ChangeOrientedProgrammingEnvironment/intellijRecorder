@@ -30,6 +30,9 @@
 
   <application-components>
     <!-- Add your application components here -->
+      <component>
+          <implementation-class>edu.oregonstate.cope.intellij.recorder.COPEComponent</implementation-class>
+      </component>
   </application-components>
 
   <project-components>
