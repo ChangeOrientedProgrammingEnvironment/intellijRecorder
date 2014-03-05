@@ -1,0 +1,3 @@
+[submodule "recorderInfra"]
+	path = recorderInfra
+	url = git@github.com:ChangeOrientedProgrammingEnvironment/recorderInfra.git
