@@ -13,14 +13,18 @@ import org.jetbrains.annotations.NotNull;
 public class EditorFactoryListener implements com.intellij.openapi.editor.event.EditorFactoryListener {
 
     private ClientRecorder recorder;
+    private String basePath;
 
-    public EditorFactoryListener(ClientRecorder recorder) {
+    public EditorFactoryListener(ClientRecorder recorder, String basePath) {
         this.recorder = recorder;
+        this.basePath = basePath;
     }
 
     @Override
     public void editorCreated(@NotNull EditorFactoryEvent event) {
         String filePath = getPathOfAffectedFile(event);
+        if (filePath.startsWith(basePath + "./cope"))
+            return;
         Document document = event.getEditor().getDocument();
         document.addDocumentListener(new DocumentListener(filePath, recorder));
 
