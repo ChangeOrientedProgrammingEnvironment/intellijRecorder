@@ -33,12 +33,13 @@ class FileListener implements VirtualFileListener {
 
     @Override
     public void fileCreated(@NotNull VirtualFileEvent event) {
-        System.out.println("CREATED FILE: " + event.getFileName());
+        VirtualFile file = event.getFile();
+        recorder.recordResourceAdd(file.getPath(), getFileContents(file));
     }
 
     @Override
     public void fileDeleted(@NotNull VirtualFileEvent event) {
-        System.out.println("DELETED FILE: " + event.getFileName());
+        recorder.recordResourceDelete(event.getFile().getPath());
     }
 
     @Override
