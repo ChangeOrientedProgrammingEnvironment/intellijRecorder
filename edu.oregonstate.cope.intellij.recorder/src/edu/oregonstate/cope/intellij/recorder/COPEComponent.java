@@ -21,11 +21,15 @@ public class COPEComponent implements ApplicationComponent {
     }
 
     public void initComponent() {
+        SimpleFileProvider fileProvider = new SimpleFileProvider("test.json");
+        fileProvider.setRootDirectory(".");
+
         ChangePersister changePersister = ChangePersister.instance();
-        changePersister.setFileManager(new SimpleFileProvider("./test.json"));
+        changePersister.setFileManager(fileProvider);
 
         recorder = new ClientRecorder();
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(recorder));
+
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(recorder));
     }
 
