@@ -1,7 +1,9 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.ide.impl.dataRules.VirtualFileArrayRule;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.vfs.*;
 import edu.oregonstate.cope.clientRecorder.ChangePersister;
 import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 import edu.oregonstate.cope.clientRecorder.fileOps.EventFilesProvider;
@@ -24,6 +26,7 @@ public class COPEComponent implements ApplicationComponent {
 
         recorder = new ClientRecorder();
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(recorder));
+        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(recorder));
     }
 
     public void disposeComponent() {
