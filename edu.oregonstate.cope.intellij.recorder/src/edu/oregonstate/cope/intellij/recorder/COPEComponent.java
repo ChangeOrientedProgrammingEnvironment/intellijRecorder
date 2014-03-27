@@ -41,7 +41,7 @@ public class COPEComponent implements ProjectComponent {
 
         RefreshListener refreshListener = new RefreshListener();
         VirtualFileManager.getInstance().addVirtualFileManagerListener(refreshListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(recorder, refreshListener));
+        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder, refreshListener));
     }
 
     @Override

@@ -13,12 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 
 class FileListener implements VirtualFileListener {
+    private COPEComponent copeComponent;
     private RecorderFacade recorderFacade;
     private RefreshListener refreshListener;
 
     public static final List<String> knownTextFiles = Arrays.asList(new String[]{"txt", "java", "xml", "mf", "c", "cpp", "c", "h"});
 
-    public FileListener(RecorderFacade recorderFacade, RefreshListener refreshListener) {
+    public FileListener(COPEComponent copeComponent, RecorderFacade recorderFacade, RefreshListener refreshListener) {
+        this.copeComponent = copeComponent;
         this.recorderFacade = recorderFacade;
         this.refreshListener = refreshListener;
     }
