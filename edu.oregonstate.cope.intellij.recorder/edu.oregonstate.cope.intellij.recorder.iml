@@ -8,7 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="edu.oregonstate.cope.clientrecorder" />
+    <orderEntry type="module" module-name="edu.oregonstate.cope.clientrecorder" exported="" />
   </component>
 </module>
 
