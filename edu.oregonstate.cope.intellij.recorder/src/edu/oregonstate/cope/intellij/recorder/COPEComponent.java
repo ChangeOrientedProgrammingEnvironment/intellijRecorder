@@ -15,6 +15,7 @@ public class COPEComponent implements ProjectComponent {
     private final String IDE = "IDEA";
     private Project project;
     private RecorderFacade recorder;
+    private IntelliJStorageManager storageManager;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -32,8 +33,10 @@ public class COPEComponent implements ProjectComponent {
     @Override
     public void projectOpened() {
         String basePath = project.getBasePath();
-        System.out.println(basePath);
-        recorder = new RecorderFacade(new IntelliJStorageManager(basePath), IDE);
+
+        storageManager = new IntelliJStorageManager(basePath);
+        recorder = new RecorderFacade(storageManager, IDE);
+
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(recorder.getClientRecorder(), basePath));
 
         RefreshListener refreshListener = new RefreshListener();
