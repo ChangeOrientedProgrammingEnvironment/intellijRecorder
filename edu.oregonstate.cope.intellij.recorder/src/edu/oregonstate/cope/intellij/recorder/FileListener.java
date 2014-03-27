@@ -31,14 +31,13 @@ class FileListener implements VirtualFileListener {
 
     @Override
     public void contentsChanged(@NotNull VirtualFileEvent event) {
-        if (ignoreEvent(event)){
+        if (ignoreEvent(event)) {
             return;
         }
 
-        if (event.isFromRefresh()){
+        if (event.isFromRefresh()) {
             recordRefresh(event);
-        }
-        else if (event.isFromSave()){
+        } else if (event.isFromSave()) {
             recordSave(event);
         }
     }
@@ -59,11 +58,11 @@ class FileListener implements VirtualFileListener {
     }
 
     private boolean ignoreEvent(VirtualFileEvent event) {
-        if(!copeComponent.fileIsInProject(event.getFile())){
+        if (!copeComponent.fileIsInProject(event.getFile())) {
             return true;
         }
 
-        if (copeComponent.fileIsInCOPEStructure(event.getFile())){
+        if (copeComponent.fileIsInCOPEStructure(event.getFile())) {
             return true;
         }
 
@@ -72,7 +71,7 @@ class FileListener implements VirtualFileListener {
 
     @Override
     public void fileCreated(@NotNull VirtualFileEvent event) {
-        if (ignoreEvent(event)){
+        if (ignoreEvent(event)) {
             return;
         }
 
@@ -82,7 +81,7 @@ class FileListener implements VirtualFileListener {
 
     @Override
     public void fileDeleted(@NotNull VirtualFileEvent event) {
-        if (ignoreEvent(event)){
+        if (ignoreEvent(event)) {
             return;
         }
 
