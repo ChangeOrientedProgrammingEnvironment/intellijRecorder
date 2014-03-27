@@ -44,14 +44,34 @@ class FileListener implements VirtualFileListener {
         }
     }
 
+    private boolean ignoreEvent(VirtualFileEvent event) {
+        if(!copeComponent.fileIsInProject(event.getFile())){
+            return true;
+        }
+
+        if (copeComponent.fileIsInCOPEStructure(event.getFile())){
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void fileCreated(@NotNull VirtualFileEvent event) {
+        if (ignoreEvent(event)){
+            return;
+        }
+
         VirtualFile file = event.getFile();
         recorderFacade.getClientRecorder().recordResourceAdd(file.getPath(), getFileContents(file));
     }
 
     @Override
     public void fileDeleted(@NotNull VirtualFileEvent event) {
+        if (ignoreEvent(event)){
+            return;
+        }
+
         recorderFacade.getClientRecorder().recordResourceDelete(event.getFile().getPath());
     }
 
