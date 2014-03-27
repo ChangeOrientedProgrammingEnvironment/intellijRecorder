@@ -1,7 +1,6 @@
 package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.openapi.vfs.*;
-import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import org.apache.commons.codec.binary.Base64;
 import org.jetbrains.annotations.NotNull;
@@ -14,13 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 class FileListener implements VirtualFileListener {
-    private RecorderFacade recorder;
+    private RecorderFacade recorderFacade;
     private RefreshListener refreshListener;
 
     public static final List<String> knownTextFiles = Arrays.asList(new String[]{"txt", "java", "xml", "mf", "c", "cpp", "c", "h"});
 
-    public FileListener(RecorderFacade recorder, RefreshListener refreshListener) {
-        this.recorder = recorder;
+    public FileListener(RecorderFacade recorderFacade, RefreshListener refreshListener) {
+        this.recorderFacade = recorderFacade;
         this.refreshListener = refreshListener;
     }
 
@@ -39,49 +38,43 @@ class FileListener implements VirtualFileListener {
             String fileName = event.getFile().getCanonicalPath();
             long modificationStamp = event.getNewModificationStamp();
 
-            recorder.getClientRecorder().recordRefresh(text, fileName, modificationStamp);
+            recorderFacade.getClientRecorder().recordRefresh(text, fileName, modificationStamp);
         }
     }
 
     @Override
     public void fileCreated(@NotNull VirtualFileEvent event) {
         VirtualFile file = event.getFile();
-        recorder.recordResourceAdd(file.getPath(), getFileContents(file));
+        recorderFacade.getClientRecorder().recordResourceAdd(file.getPath(), getFileContents(file));
     }
 
     @Override
     public void fileDeleted(@NotNull VirtualFileEvent event) {
-        recorder.recordResourceDelete(event.getFile().getPath());
+        recorderFacade.getClientRecorder().recordResourceDelete(event.getFile().getPath());
     }
 
     @Override
     public void fileMoved(@NotNull VirtualFileMoveEvent event) {
-
     }
 
     @Override
     public void fileCopied(@NotNull VirtualFileCopyEvent event) {
-
     }
 
     @Override
     public void beforePropertyChange(@NotNull VirtualFilePropertyEvent event) {
-
     }
 
     @Override
     public void beforeContentsChange(@NotNull VirtualFileEvent event) {
-
     }
 
     @Override
     public void beforeFileDeletion(@NotNull VirtualFileEvent event) {
-
     }
 
     @Override
     public void beforeFileMovement(@NotNull VirtualFileMoveEvent event) {
-
     }
 
     //TODO copy pasted from /edu.oregonstate.cope.eclipse/src/edu/oregonstate/cope/eclipse/listeners/ResourceListener.java
