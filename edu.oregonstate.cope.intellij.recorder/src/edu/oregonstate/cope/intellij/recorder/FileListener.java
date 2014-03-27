@@ -26,12 +26,21 @@ class FileListener implements VirtualFileListener {
 
     @Override
     public void propertyChanged(@NotNull VirtualFilePropertyEvent event) {
-
     }
 
     @Override
     public void contentsChanged(@NotNull VirtualFileEvent event) {
+        if (ignoreEvent(event)){
+            return;
+        }
 
+        if (isRefresh(event)){
+            String text = getFileContents(event.getFile());
+            String fileName = event.getFile().getCanonicalPath();
+            long modificationStamp = event.getNewModificationStamp();
+
+            recorder.getClientRecorder().recordRefresh(text, fileName, modificationStamp);
+        }
     }
 
     @Override
