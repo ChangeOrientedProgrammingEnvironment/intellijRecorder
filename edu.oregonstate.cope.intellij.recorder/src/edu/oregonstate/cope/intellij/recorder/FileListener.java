@@ -36,18 +36,26 @@ class FileListener implements VirtualFileListener {
         }
 
         if (event.isFromRefresh()){
-            String fileContents = getFileContents(event.getFile());
-            String filePath = event.getFile().getCanonicalPath();
-            long modificationStamp = event.getNewModificationStamp();
-
-            recorderFacade.getClientRecorder().recordRefresh(fileContents, filePath, modificationStamp);
+            recordRefresh(event);
         }
         else if (event.isFromSave()){
-            String filePath = event.getFile().getCanonicalPath();
-            long modificationStamp = event.getNewModificationStamp();
-
-            recorderFacade.getClientRecorder().recordFileSave(filePath, modificationStamp);
+            recordSave(event);
         }
+    }
+
+    private void recordSave(VirtualFileEvent event) {
+        String filePath = event.getFile().getCanonicalPath();
+        long modificationStamp = event.getNewModificationStamp();
+
+        recorderFacade.getClientRecorder().recordFileSave(filePath, modificationStamp);
+    }
+
+    private void recordRefresh(VirtualFileEvent event) {
+        String fileContents = getFileContents(event.getFile());
+        String filePath = event.getFile().getCanonicalPath();
+        long modificationStamp = event.getNewModificationStamp();
+
+        recorderFacade.getClientRecorder().recordRefresh(fileContents, filePath, modificationStamp);
     }
 
     private boolean ignoreEvent(VirtualFileEvent event) {
