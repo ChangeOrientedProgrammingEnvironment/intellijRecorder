@@ -36,8 +36,8 @@ class FileListener implements VirtualFileListener {
         }
 
         if (event.isFromRefresh()){
-            String text = getFileContents(event.getFile());
-            String fileName = event.getFile().getCanonicalPath();
+            String fileContents = getFileContents(event.getFile());
+            String filePath = event.getFile().getCanonicalPath();
             long modificationStamp = event.getNewModificationStamp();
 
             recorderFacade.getClientRecorder().recordRefresh(text, fileName, modificationStamp);
