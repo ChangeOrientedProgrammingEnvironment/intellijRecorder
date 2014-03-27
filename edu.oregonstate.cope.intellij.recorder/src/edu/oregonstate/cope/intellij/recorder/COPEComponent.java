@@ -1,16 +1,10 @@
 package edu.oregonstate.cope.intellij.recorder;
 
-import com.intellij.ide.impl.dataRules.VirtualFileArrayRule;
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.project.Project;
-import edu.oregonstate.cope.clientRecorder.ChangePersister;
-import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
-import edu.oregonstate.cope.clientRecorder.fileOps.EventFilesProvider;
-import edu.oregonstate.cope.clientRecorder.fileOps.SimpleFileProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -38,9 +32,13 @@ public class COPEComponent implements ProjectComponent {
     @Override
     public void projectOpened() {
         String basePath = project.getBasePath();
+        System.out.println(basePath);
         recorder = new RecorderFacade(new IntelliJStorageManager(basePath), IDE);
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(recorder.getClientRecorder(), basePath));
-        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(recorder));
+
+        RefreshListener refreshListener = new RefreshListener();
+        VirtualFileManager.getInstance().addVirtualFileManagerListener(refreshListener);
+        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(recorder, refreshListener));
     }
 
     @Override

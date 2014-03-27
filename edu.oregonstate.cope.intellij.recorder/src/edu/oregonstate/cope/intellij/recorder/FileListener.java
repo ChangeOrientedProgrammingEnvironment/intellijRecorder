@@ -2,6 +2,7 @@ package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.openapi.vfs.*;
 import edu.oregonstate.cope.clientRecorder.ClientRecorder;
+import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import org.apache.commons.codec.binary.Base64;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,12 +14,14 @@ import java.util.Arrays;
 import java.util.List;
 
 class FileListener implements VirtualFileListener {
-    private ClientRecorder recorder;
+    private RecorderFacade recorder;
+    private RefreshListener refreshListener;
 
     public static final List<String> knownTextFiles = Arrays.asList(new String[]{"txt", "java", "xml", "mf", "c", "cpp", "c", "h"});
 
-    public FileListener(ClientRecorder recorder) {
+    public FileListener(RecorderFacade recorder, RefreshListener refreshListener) {
         this.recorder = recorder;
+        this.refreshListener = refreshListener;
     }
 
     @Override
