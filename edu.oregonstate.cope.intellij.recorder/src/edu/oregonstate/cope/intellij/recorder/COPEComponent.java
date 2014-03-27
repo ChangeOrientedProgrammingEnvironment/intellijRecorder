@@ -2,6 +2,8 @@ package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.roots.ProjectFileIndex;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.project.Project;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
@@ -58,4 +60,13 @@ public class COPEComponent implements ProjectComponent {
         return recorder;
     }
 
+    public boolean fileIsInProject(VirtualFile file) {
+        ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+
+        return projectFileIndex.isInContent(file);
+    }
+
+    public boolean fileIsInCOPEStructure(VirtualFile file) {
+        return storageManager.isPathInManagedStorage(file.getPath());
+    }
 }
