@@ -1,3 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module classpath="eclipse" classpath-dir="$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.clientrecorder" type="JAVA_MODULE" version="4" />
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.clientrecorder/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.clientrecorder">
+      <sourceFolder url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.clientrecorder/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="edu.oregonstate.cope.thirdparty" />
+  </component>
+</module>
 
