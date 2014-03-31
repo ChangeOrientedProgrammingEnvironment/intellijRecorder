@@ -32,4 +32,11 @@ public class IntelliJStorageManager implements StorageManager {
     public File getVersionedBundleStorage() {
         return onlyFile;
     }
+
+    public boolean isPathInManagedStorage(String path) {
+        return (path.contains(getLocalStorage().getName())          ||
+               path.contains(getBundleStorage().getName())          ||
+               path.contains(getVersionedBundleStorage().getName()) ||
+               path.contains(getVersionedLocalStorage().getName()));
+    }
 }
