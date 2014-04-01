@@ -73,7 +73,7 @@ public class COPEComponent implements ProjectComponent {
         }
     }
 
-    private void addCOPETaskToRunConfiguration(RunConfiguration runConfiguration) {
+    void addCOPETaskToRunConfiguration(RunConfiguration runConfiguration) {
         List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
         if (!containsCOPEListener(beforeRunTasks)) {
             beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
