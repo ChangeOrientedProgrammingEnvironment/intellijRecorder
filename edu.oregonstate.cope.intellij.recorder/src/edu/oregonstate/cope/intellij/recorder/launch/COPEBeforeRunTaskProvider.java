@@ -1,4 +1,4 @@
-package edu.oregonstate.cope.intellij.recorder;
+package edu.oregonstate.cope.intellij.recorder.launch;
 
 import com.intellij.execution.BeforeRunTaskProvider;
 import com.intellij.execution.configurations.RunConfiguration;

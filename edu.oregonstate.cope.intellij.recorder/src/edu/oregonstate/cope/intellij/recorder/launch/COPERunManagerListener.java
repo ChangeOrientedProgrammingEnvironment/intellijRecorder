@@ -1,14 +1,15 @@
-package edu.oregonstate.cope.intellij.recorder;
+package edu.oregonstate.cope.intellij.recorder.launch;
 
 import com.intellij.execution.RunManagerListener;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
 * Created by caius on 4/1/14.
 */
-class COPERunManagerListener implements RunManagerListener {
+public class COPERunManagerListener implements RunManagerListener {
 
     @Override
     public void runConfigurationSelected() {

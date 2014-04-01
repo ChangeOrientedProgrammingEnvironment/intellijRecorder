@@ -11,6 +11,9 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.project.Project;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
+import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
+import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -74,7 +77,7 @@ public class COPEComponent implements ProjectComponent {
         }
     }
 
-    void addCOPETaskToRunConfiguration(RunConfiguration runConfiguration) {
+    public void addCOPETaskToRunConfiguration(RunConfiguration runConfiguration) {
         List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
         if (!containsCOPEListener(beforeRunTasks)) {
             beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
