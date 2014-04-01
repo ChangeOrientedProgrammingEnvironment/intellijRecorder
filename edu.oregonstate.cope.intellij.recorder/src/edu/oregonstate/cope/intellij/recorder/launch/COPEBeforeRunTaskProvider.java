@@ -14,7 +14,7 @@ public class COPEBeforeRunTaskProvider extends BeforeRunTaskProvider<COPEBeforeR
 
     public static final String EXTENSION_NAME = "COPE Run Recorder";
 
-    Key<COPEBeforeRunTask> launchProvider = new Key<COPEBeforeRunTask>("edu.oregonstate.cope.intellij.launchprovider");
+    private Key<COPEBeforeRunTask> launchProvider = new Key<COPEBeforeRunTask>("edu.oregonstate.cope.intellij.launchprovider");
 
     @Override
     public Key<COPEBeforeRunTask> getId() {
