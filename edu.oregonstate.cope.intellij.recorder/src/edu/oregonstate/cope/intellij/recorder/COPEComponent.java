@@ -28,16 +28,24 @@ public class COPEComponent implements ProjectComponent {
     private IntelliJStorageManager storageManager;
     private Key<COPEBeforeRunTask> providerID;
 
+    private static COPEComponent component = null;
+
     public COPEComponent(Project project) {
         this.project = project;
     }
 
     @Override
     public void initComponent() {
+        component = this;
     }
 
     @Override
     public void disposeComponent() {
+        component = null;
+    }
+
+    public static COPEComponent getInstance() {
+        return component;
     }
 
     @Override
