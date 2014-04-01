@@ -1,5 +1,8 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import edu.oregonstate.cope.clientRecorder.StorageManager;
 
@@ -18,23 +21,23 @@ public class IntelliJStorageManager implements StorageManager {
     }
 
     public File getLocalStorage() {
-        String basePath = project.getBasePath();
-        onlyFile = new File(basePath + "/.cope");
-        onlyFile.mkdir();
+        File copeDirectory = makeCopeDirectory(project.getBasePath());
 
-        return onlyFile;
+        return copeDirectory;
     }
 
     public File getBundleStorage() {
-        return getLocalStorage();
+        File path = getPluginDescriptor().getPath();
+
+        return makeCopeDirectory(path.getAbsolutePath());
     }
 
     public File getVersionedLocalStorage() {
-        return getLocalStorage();
+        return getVersionedStorage(getLocalStorage());
     }
 
     public File getVersionedBundleStorage() {
-        return getLocalStorage();
+        return getVersionedStorage(getBundleStorage());
     }
 
     public boolean isPathInManagedStorage(String path) {
@@ -42,5 +45,20 @@ public class IntelliJStorageManager implements StorageManager {
                path.contains(getBundleStorage().getName())          ||
                path.contains(getVersionedBundleStorage().getName()) ||
                path.contains(getVersionedLocalStorage().getName()));
+    }
+
+    private IdeaPluginDescriptor getPluginDescriptor() {
+        return PluginManager.getPlugin(PluginId.getId(COPEComponent.ID));
+    }
+
+    private File makeCopeDirectory(String basePath) {
+        File copeFile = new File(basePath, ".cope");
+        copeFile.mkdir();
+
+        return copeFile;
+    }
+
+    private File getVersionedStorage(File file) {
+        return new File(file, getPluginDescriptor().getVersion());
     }
 }
