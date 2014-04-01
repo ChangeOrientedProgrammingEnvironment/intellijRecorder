@@ -24,6 +24,7 @@ public class COPEComponent implements ProjectComponent {
     private Project project;
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
+    private Key<COPEBeforeRunTask> launchProvider = new Key<COPEBeforeRunTask>("edu.oregonstate.cope.intellij.launchprovider");
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -53,6 +54,15 @@ public class COPEComponent implements ProjectComponent {
         RunManagerEx runManager = (RunManagerEx) RunManagerEx.getInstance(project);
 
         runManager.addRunManagerListener(new COPERunManagerListener());
+
+        BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider = getBeforeRunTaskProvider();
+        if (beforeRunTaskProvider == null)
+            System.out.println("Could not find provider");
+        for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
+            List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
+            beforeRunTasks.add(new COPEBeforeRunTask(beforeRunTaskProvider.getId()));
+            runManager.setBeforeRunTasks(runConfiguration, beforeRunTasks, true);
+        }
     }
 
     private BeforeRunTaskProvider<COPEBeforeRunTask> getBeforeRunTaskProvider() {
@@ -89,4 +99,5 @@ public class COPEComponent implements ProjectComponent {
     public boolean fileIsInCOPEStructure(VirtualFile file) {
         return storageManager.isPathInManagedStorage(file.getPath());
     }
+
 }
