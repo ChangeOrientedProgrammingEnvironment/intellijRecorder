@@ -23,11 +23,12 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
 
     @Override
     public void editorCreated(@NotNull EditorFactoryEvent event) {
+        String filePath = getPathOfAffectedFile(event);
+        if (filePath == null)
+            return;
         if (copeComponent.fileIsInCOPEStructure(getAffectedVirtualFile(event))) {
             return;
         }
-
-        String filePath = getPathOfAffectedFile(event);
 
         Document document = event.getEditor().getDocument();
         document.addDocumentListener(new DocumentListener(filePath, recorder));
@@ -37,6 +38,9 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
 
     private String getPathOfAffectedFile(EditorFactoryEvent event) {
         VirtualFile file = getAffectedVirtualFile(event);
+        if (file == null) {
+            return null;
+        }
         return file.getCanonicalPath();
     }
 
