@@ -26,7 +26,7 @@ public class COPEComponent implements ProjectComponent {
     private Project project;
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
-    private Key<COPEBeforeRunTask> launchProvider = new Key<COPEBeforeRunTask>("edu.oregonstate.cope.intellij.launchprovider");
+    private Key<COPEBeforeRunTask> providerID;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -57,13 +57,25 @@ public class COPEComponent implements ProjectComponent {
         runManager.addRunManagerListener(new COPERunManagerListener());
 
         BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider = getBeforeRunTaskProvider();
-        if (beforeRunTaskProvider == null)
+        if (beforeRunTaskProvider == null) {
             System.out.println("Could not find provider");
+            return;
+        }
+        providerID = beforeRunTaskProvider.getId();
         for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
             List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
-            beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
-            runManager.setBeforeRunTasks(runConfiguration, beforeRunTasks, true);
+            if (!containsCOPEListener(beforeRunTasks)) {
+                beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
+                runManager.setBeforeRunTasks(runConfiguration, beforeRunTasks, true);
+            }
         }
+    }
+
+    private boolean containsCOPEListener(List<BeforeRunTask> tasks) {
+        for (BeforeRunTask task : tasks)
+            if (providerID.equals(task.getProviderId()))
+                return true;
+        return false;
     }
 
     private BeforeRunTaskProvider<COPEBeforeRunTask> getBeforeRunTaskProvider() {
