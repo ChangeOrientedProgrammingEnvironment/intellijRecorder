@@ -37,6 +37,48 @@ public class COPEComponent implements ApplicationComponent {
                 if(statusBar != null){
                     statusBar.addWidget(status);
                 }
+
+                Survey1 dialog = new Survey1();
+                dialog.pack();
+                dialog.setVisible(true);
+//                String txt= Messages.showInputDialog(project, "What is your name?", "Input your name", Messages.getQuestionIcon());
+//                Messages.showMessageDialog(project, "Hello, " + txt + "!\n I am glad to see you.", "Information", Messages.getInformationIcon());
+
+
+//                Survey survey = new Survey();
+//                survey.setVisible(true);
+
+
+
+                /*
+                JFrame.setDefaultLookAndFeelDecorated(true);
+                JFrame frame = new JFrame("[=] There's a JPanel in here! [=]");
+
+                JPanel jp = new JPanel(new SpringLayout());
+                jp.setOpaque(true);
+
+                frame.setContentPane(jp);
+
+                JLabel lTitle = new JLabel("Thanks you for participating in the study titled: Understanding TDD Practices.  Please answer just a few demographic questions before you begin using the plugin",JLabel.TRAILING);
+                jp.add(lTitle);
+
+                JLabel l = new JLabel("Name:",JLabel.TRAILING);
+                jp.add(l);
+                JTextField textField = new JTextField(10);
+                l.setLabelFor(textField);
+                jp.add(textField);
+
+
+                //SpringUtilities.makeCompactGrid(jp,2,2,6,6,6,6);
+
+
+
+                // The other bits and pieces that make our program a bit more stable.
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(290, 100);
+                frame.setVisible(true);
+                */
+
             }
 
             @Override
@@ -56,6 +98,7 @@ public class COPEComponent implements ApplicationComponent {
         windowM.addSeparator();
         windowM.add(action);
       */
+
 
     }
 
