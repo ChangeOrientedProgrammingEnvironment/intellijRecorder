@@ -2,6 +2,7 @@ package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.execution.RunManagerListener;
 import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.configurations.RunConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,7 +21,8 @@ class COPERunManagerListener implements RunManagerListener {
 
     @Override
     public void runConfigurationAdded(@NotNull RunnerAndConfigurationSettings settings) {
-        COPEComponent.getInstance().addCOPETaskToRunConfiguration(settings.getConfiguration());
+        RunConfiguration runConfiguration = settings.getConfiguration();
+        COPEComponent.getInstance(runConfiguration.getProject()).addCOPETaskToRunConfiguration(runConfiguration);
     }
 
     @Override

@@ -14,6 +14,7 @@ import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by caius on 3/3/14.
@@ -30,7 +31,7 @@ public class COPEComponent implements ProjectComponent {
     private RunManagerEx runManager;
     private BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider;
 
-    private static COPEComponent component = null;
+    private static Map<Project,COPEComponent> componentMap = null;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -38,16 +39,16 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void initComponent() {
-        component = this;
+        componentMap.put(project,this);
     }
 
     @Override
     public void disposeComponent() {
-        component = null;
+        componentMap.put(project,null);
     }
 
-    public static COPEComponent getInstance() {
-        return component;
+    public static COPEComponent getInstance(Project project) {
+        return componentMap.get(project);
     }
 
     @Override
