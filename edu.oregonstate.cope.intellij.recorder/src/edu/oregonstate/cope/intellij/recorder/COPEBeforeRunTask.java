@@ -11,6 +11,7 @@ public class COPEBeforeRunTask extends BeforeRunTask<COPEBeforeRunTask> {
 
     protected COPEBeforeRunTask(@NotNull Key<COPEBeforeRunTask> providerId) {
         super(providerId);
+        setEnabled(true);
     }
 
 }
