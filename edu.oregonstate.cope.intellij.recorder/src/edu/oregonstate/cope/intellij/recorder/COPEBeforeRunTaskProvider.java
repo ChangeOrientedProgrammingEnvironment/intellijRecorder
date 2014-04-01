@@ -44,7 +44,7 @@ public class COPEBeforeRunTaskProvider extends BeforeRunTaskProvider<COPEBeforeR
 
     @Override
     public boolean configureTask(RunConfiguration runConfiguration, COPEBeforeRunTask task) {
-        return false;
+        return true;
     }
 
     @Override
