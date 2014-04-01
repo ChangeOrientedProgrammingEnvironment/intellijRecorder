@@ -27,6 +27,8 @@ public class COPEComponent implements ProjectComponent {
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
     private Key<COPEBeforeRunTask> providerID;
+    private RunManagerEx runManager;
+    private BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider;
 
     private static COPEComponent component = null;
 
@@ -56,22 +58,26 @@ public class COPEComponent implements ProjectComponent {
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
-        RunManagerEx runManager = (RunManagerEx) RunManagerEx.getInstance(project);
+        runManager = (RunManagerEx) RunManagerEx.getInstance(project);
 
         runManager.addRunManagerListener(new COPERunManagerListener());
 
-        BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider = getBeforeRunTaskProvider();
+        beforeRunTaskProvider = getBeforeRunTaskProvider();
         if (beforeRunTaskProvider == null) {
             System.out.println("Could not find provider");
             return;
         }
         providerID = beforeRunTaskProvider.getId();
         for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
-            List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
-            if (!containsCOPEListener(beforeRunTasks)) {
-                beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
-                runManager.setBeforeRunTasks(runConfiguration, beforeRunTasks, true);
-            }
+            addCOPETaskToRunConfiguration(runConfiguration);
+        }
+    }
+
+    private void addCOPETaskToRunConfiguration(RunConfiguration runConfiguration) {
+        List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
+        if (!containsCOPEListener(beforeRunTasks)) {
+            beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
+            runManager.setBeforeRunTasks(runConfiguration, beforeRunTasks, true);
         }
     }
 
