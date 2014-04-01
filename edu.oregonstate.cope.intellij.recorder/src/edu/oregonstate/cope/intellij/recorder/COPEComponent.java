@@ -61,7 +61,7 @@ public class COPEComponent implements ProjectComponent {
             System.out.println("Could not find provider");
         for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
             List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
-            beforeRunTasks.add(new COPEBeforeRunTask(beforeRunTaskProvider.getId()));
+            beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
             runManager.setBeforeRunTasks(runConfiguration, beforeRunTasks, true);
         }
     }
