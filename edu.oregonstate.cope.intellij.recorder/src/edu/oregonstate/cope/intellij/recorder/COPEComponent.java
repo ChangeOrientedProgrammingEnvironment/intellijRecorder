@@ -20,6 +20,8 @@ import java.util.List;
  */
 public class COPEComponent implements ProjectComponent {
 
+    public static final String ID = "edu.oregonstate.cope.intellij.recorder";
+
     private final String IDE = "IDEA";
     private Project project;
     private RecorderFacade recorder;
@@ -43,12 +45,11 @@ public class COPEComponent implements ProjectComponent {
     @Override
     public void projectOpened() {
         System.out.println("The fucking project has been opened");
-        String basePath = project.getBasePath();
 
-        storageManager = new IntelliJStorageManager(basePath);
+        storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
 
-        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(recorder.getClientRecorder(), basePath));
+        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
         RunManagerEx runManager = (RunManagerEx) RunManagerEx.getInstance(project);
