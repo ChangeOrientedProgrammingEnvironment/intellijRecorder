@@ -1,5 +1,6 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.openapi.project.Project;
 import edu.oregonstate.cope.clientRecorder.StorageManager;
 
 import java.io.File;
@@ -10,27 +11,30 @@ import java.io.File;
 public class IntelliJStorageManager implements StorageManager {
 
     private File onlyFile;
+    private Project project;
 
-    public IntelliJStorageManager(String basePath) {
-        onlyFile = new File(basePath + "/.cope");
-        onlyFile.mkdir();
-        System.out.println(onlyFile.getAbsolutePath());
+    public IntelliJStorageManager(Project project) {
+        this.project = project;
     }
 
     public File getLocalStorage() {
+        String basePath = project.getBasePath();
+        onlyFile = new File(basePath + "/.cope");
+        onlyFile.mkdir();
+
         return onlyFile;
     }
 
     public File getBundleStorage() {
-        return onlyFile;
+        return getLocalStorage();
     }
 
     public File getVersionedLocalStorage() {
-        return onlyFile;
+        return getLocalStorage();
     }
 
     public File getVersionedBundleStorage() {
-        return onlyFile;
+        return getLocalStorage();
     }
 
     public boolean isPathInManagedStorage(String path) {
