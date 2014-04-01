@@ -55,6 +55,17 @@ public class COPEComponent implements ProjectComponent {
         runManager.addRunManagerListener(new COPERunManagerListener());
     }
 
+    private BeforeRunTaskProvider<COPEBeforeRunTask> getBeforeRunTaskProvider() {
+        BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider = null;
+        BeforeRunTaskProvider<BeforeRunTask>[] extensions = Extensions.getExtensions(BeforeRunTaskProvider.EXTENSION_POINT_NAME, project);
+        for (BeforeRunTaskProvider<? extends BeforeRunTask> extension : extensions) {
+            String name = extension.getName();
+            if (name.equals(COPEBeforeRunTaskProvider.EXTENSION_NAME))
+                beforeRunTaskProvider = (BeforeRunTaskProvider<COPEBeforeRunTask>) extension;
+        }
+        return beforeRunTaskProvider;
+    }
+
     @Override
     public void projectClosed() {
 
