@@ -3,7 +3,7 @@ package edu.oregonstate.cope.intellij.recorder;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class Survey1 extends JDialog {
+public class Survey extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -18,7 +18,7 @@ public class Survey1 extends JDialog {
     private JRadioButton a50OrOlderRadioButton;
     private JTextField emailTextField;
 
-    public Survey1() {
+    public Survey() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);

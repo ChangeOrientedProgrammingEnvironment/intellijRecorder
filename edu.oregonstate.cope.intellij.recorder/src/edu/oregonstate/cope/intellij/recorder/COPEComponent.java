@@ -38,15 +38,12 @@ public class COPEComponent implements ApplicationComponent {
                     statusBar.addWidget(status);
                 }
 
-                Survey1 dialog = new Survey1();
+                Survey dialog = new Survey();
                 dialog.pack();
                 dialog.setVisible(true);
 //                String txt= Messages.showInputDialog(project, "What is your name?", "Input your name", Messages.getQuestionIcon());
 //                Messages.showMessageDialog(project, "Hello, " + txt + "!\n I am glad to see you.", "Information", Messages.getInformationIcon());
 
-
-//                Survey survey = new Survey();
-//                survey.setVisible(true);
 
 
 
