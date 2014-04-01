@@ -39,7 +39,7 @@ public class COPEComponent implements ProjectComponent {
         storageManager = new IntelliJStorageManager(basePath);
         recorder = new RecorderFacade(storageManager, IDE);
 
-        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(recorder.getClientRecorder(), basePath));
+        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
     }
