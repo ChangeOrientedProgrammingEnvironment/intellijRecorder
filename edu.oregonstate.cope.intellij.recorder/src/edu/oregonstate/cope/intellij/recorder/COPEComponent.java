@@ -1,13 +1,19 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.execution.*;
+import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.project.Project;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Created by caius on 3/3/14.
@@ -25,15 +31,17 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void initComponent() {
-
+        System.out.println("The fucking component has been initialized");
     }
 
     @Override
     public void disposeComponent() {
+        System.out.println("The fucking component has been disposed");
     }
 
     @Override
     public void projectOpened() {
+        System.out.println("The fucking project has been opened");
         String basePath = project.getBasePath();
 
         storageManager = new IntelliJStorageManager(basePath);
