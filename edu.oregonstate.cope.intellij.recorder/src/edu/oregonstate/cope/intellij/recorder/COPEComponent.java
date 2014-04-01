@@ -34,18 +34,14 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void initComponent() {
-        System.out.println("The fucking component has been initialized");
     }
 
     @Override
     public void disposeComponent() {
-        System.out.println("The fucking component has been disposed");
     }
 
     @Override
     public void projectOpened() {
-        System.out.println("The fucking project has been opened");
-
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
 
