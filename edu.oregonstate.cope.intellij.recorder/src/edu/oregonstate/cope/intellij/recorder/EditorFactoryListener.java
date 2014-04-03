@@ -12,15 +12,24 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EditorFactoryListener implements com.intellij.openapi.editor.event.EditorFactoryListener {
 
+    private COPEComponent copeComponent;
     private ClientRecorder recorder;
+    private String basePath;
 
-    public EditorFactoryListener(ClientRecorder recorder) {
+    public EditorFactoryListener(COPEComponent copeComponent, ClientRecorder recorder) {
+        this.copeComponent = copeComponent;
         this.recorder = recorder;
     }
 
     @Override
     public void editorCreated(@NotNull EditorFactoryEvent event) {
         String filePath = getPathOfAffectedFile(event);
+        if (filePath == null)
+            return;
+        if (copeComponent.fileIsInCOPEStructure(getAffectedVirtualFile(event))) {
+            return;
+        }
+
         Document document = event.getEditor().getDocument();
         document.addDocumentListener(new DocumentListener(filePath, recorder));
 
@@ -28,9 +37,16 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
     }
 
     private String getPathOfAffectedFile(EditorFactoryEvent event) {
-        VirtualFile baseDir = event.getEditor().getProject().getBaseDir();
-        VirtualFile file = FileDocumentManager.getInstance().getFile(event.getEditor().getDocument());
+        VirtualFile file = getAffectedVirtualFile(event);
+        if (file == null) {
+            return null;
+        }
         return file.getCanonicalPath();
+    }
+
+    private VirtualFile getAffectedVirtualFile(EditorFactoryEvent event) {
+        VirtualFile baseDir = event.getEditor().getProject().getBaseDir();
+        return FileDocumentManager.getInstance().getFile(event.getEditor().getDocument());
     }
 
     @Override

@@ -2,4 +2,16 @@
 <component LANGUAGE_LEVEL="JDK_1_7" inheritJdk="true">
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.clientrecorder"/>
+	<lib name="$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/json-simple-1.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/json-simple-1.1.1.jar!/"/>
+	</lib>
+	<lib name="$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/slf4j-api-1.7.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/slf4j-api-1.7.5.jar!/"/>
+	</lib>
+	<lib name="$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-classic-1.0.13.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-classic-1.0.13.jar!/"/>
+	</lib>
+	<lib name="$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-core-1.0.13.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-core-1.0.13.jar!/"/>
+	</lib>
 </component>

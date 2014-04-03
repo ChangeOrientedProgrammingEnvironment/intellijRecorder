@@ -1,3 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module classpath="eclipse" classpath-dir="$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty" type="JAVA_MODULE" version="4" />
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager">
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-net-3.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/quartz-1.8.6.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-vfs2-2.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/jsch-0.1.50.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-io-1.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-codec-1.8.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/json-simple-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-classic-1.0.13.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-core-1.0.13.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/slf4j-api-1.7.5.jar!/" />
+    <src_description expected_position="0" />
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library name="commons-net-3.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-net-3.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="quartz-1.8.6.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/quartz-1.8.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="commons-vfs2-2.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-vfs2-2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="jsch-0.1.50.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/jsch-0.1.50.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="commons-io-1.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-io-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="commons-codec-1.8.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/commons-codec-1.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="module-library" exported="">
+      <library name="json-simple-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/json-simple-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="logback-classic-1.0.13.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-classic-1.0.13.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="logback-core-1.0.13.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/logback-core-1.0.13.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="slf4j-api-1.7.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.thirdparty/slf4j-api-1.7.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
 

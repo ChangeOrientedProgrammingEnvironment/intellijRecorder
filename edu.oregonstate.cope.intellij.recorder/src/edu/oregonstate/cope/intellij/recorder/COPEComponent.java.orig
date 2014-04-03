@@ -1,15 +1,26 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+<<<<<<< HEAD
+import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.ProjectManagerAdapter;
+import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.WindowManager;
+import edu.oregonstate.cope.clientRecorder.ClientRecorder;
+=======
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+>>>>>>> 61d1a848dbd9b095b4cabc61b888d9cae1330699
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 
@@ -19,6 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import java.io.File;
+
 /**
  * Created by caius on 3/3/14.
  */
@@ -26,18 +39,21 @@ public class COPEComponent implements ProjectComponent {
 
     public static final String ID = "edu.oregonstate.cope.intellij.recorder";
 
+<<<<<<< HEAD
     COPEStatus status;
     protected Path workspaceDirectory;
     protected Path permanentDirectory;
     private static final String SURVEY_FILENAME = "survey.txt";
     public final static String EMAIL_FILENAME = "email.txt";
 
+
+    private ClientRecorder recorder;
+=======
     private final String IDE = "IDEA";
     private Project project;
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
-
-
+>>>>>>> 61d1a848dbd9b095b4cabc61b888d9cae1330699
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -45,6 +61,35 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void initComponent() {
+<<<<<<< HEAD
+        status = new COPEStatus();
+
+        ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
+            @Override
+            public void projectOpened(Project project) {
+                StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+                if(statusBar != null){
+                    statusBar.addWidget(status);
+                }
+
+
+                try {
+                    CheckIfSurveyExists();
+                } catch (IOException e) {
+                    //WHAT SHOULD WE DO WITH THIS ERROR?
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void projectClosed(Project project) {
+
+            }
+        });
+=======
+
+>>>>>>> 61d1a848dbd9b095b4cabc61b888d9cae1330699
     }
 
     @Override
@@ -59,24 +104,7 @@ public class COPEComponent implements ProjectComponent {
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
-
-
-        StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-        if (statusBar != null) {
-            status = new COPEStatus();
-            statusBar.addWidget(status);
-        }
-
-
-        try {
-            CheckIfSurveyExists();
-        } catch (IOException e) {
-            //WHAT SHOULD WE DO WITH THIS ERROR?
-            e.printStackTrace();
-        }
     }
-
-
 
     @Override
     public void projectClosed() {
@@ -88,20 +116,11 @@ public class COPEComponent implements ProjectComponent {
         return "COPEComponent";
     }
 
-    public RecorderFacade getRecorder() {
-        return recorder;
-    }
-
-    public boolean fileIsInProject(VirtualFile file) {
-        ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-
-        return projectFileIndex.isInContent(file);
-    }
-
-    public boolean fileIsInCOPEStructure(VirtualFile file) {
-        return storageManager.isPathInManagedStorage(file.getPath());
-    }
-
+<<<<<<< HEAD
+//    public InstallerOperation(Path workspaceDirectory, Path permanentDirectory) {
+//        this.permanentDirectory = permanentDirectory;
+//        this.workspaceDirectory = workspaceDirectory;
+//    }
 
     private void CheckIfSurveyExists() throws IOException {
         String fileName = getFileName();
@@ -110,14 +129,20 @@ public class COPEComponent implements ProjectComponent {
 
         if (workspaceFile.exists() && permanentFile.exists()) {
             // System.out.println(this.getClass() + " both files exist");
-            //DO NOTHING
-        } else if (!workspaceFile.exists() && permanentFile.exists()) {
+            doBothFilesExists();
+        }
+
+        else if (!workspaceFile.exists() && permanentFile.exists()) {
             // System.out.println(this.getClass() + " only permanent");
             doOnlyPermanentFileExists(workspaceFile, permanentFile);
-        } else if (workspaceFile.exists() && !permanentFile.exists()) {
+        }
+
+        else if (workspaceFile.exists() && !permanentFile.exists()) {
             // System.out.println(this.getClass() + " only workspace");
             doOnlyWorkspaceFileExists(workspaceFile, permanentFile);
-        } else if (!workspaceFile.exists() && !permanentFile.exists()) {
+        }
+
+        else if (!workspaceFile.exists() && !permanentFile.exists()) {
             // System.out.println(this.getClass() + " neither files exist");
             doNoFileExists(workspaceFile, permanentFile);
         }
@@ -131,6 +156,8 @@ public class COPEComponent implements ProjectComponent {
         Files.copy(permanentFile.toPath(), workspaceFile.toPath());
     }
 
+    protected void doBothFilesExists() {
+    }
 
     protected String getFileName() {
         return SURVEY_FILENAME;
@@ -154,10 +181,7 @@ public class COPEComponent implements ProjectComponent {
 //        writeContentsToFile(workspaceFile.toPath(), sw.getSurveyResults());
 //        writeContentsToFile(permanentFile.toPath(), sw.getSurveyResults());
 //
-
-        writeContentsToFile(workspaceFile.toPath(), survey.toString());
-        writeContentsToFile(permanentFile.toPath(), survey.toString());
-        handleEmail(email);
+//        handleEmail(sw.getEmail());
     }
 
     private void handleEmail(String email) throws IOException {
@@ -176,4 +200,20 @@ public class COPEComponent implements ProjectComponent {
     }
 
 
+
+=======
+    public RecorderFacade getRecorder() {
+        return recorder;
+    }
+
+    public boolean fileIsInProject(VirtualFile file) {
+        ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+
+        return projectFileIndex.isInContent(file);
+    }
+
+    public boolean fileIsInCOPEStructure(VirtualFile file) {
+        return storageManager.isPathInManagedStorage(file.getPath());
+    }
+>>>>>>> 61d1a848dbd9b095b4cabc61b888d9cae1330699
 }

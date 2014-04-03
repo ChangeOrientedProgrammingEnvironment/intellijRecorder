@@ -1,0 +1,11 @@
+workspace.xml
+
+/out/
+
+<<<<<<< HEAD
+.idea/vcs.xml
+=======
+.cope/
+
+.idea/dictionaries/
+>>>>>>> 61d1a848dbd9b095b4cabc61b888d9cae1330699

@@ -2,4 +2,6 @@ workspace.xml
 
 /out/
 
-.idea/vcs.xml
+.cope/
+
+.idea/dictionaries/

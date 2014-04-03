@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-  <id>edu.oregonstate.edu.cope.intellij.recorder</id>
+  <id>edu.oregonstate.cope.intellij.recorder</id>
   <name>COPE Recorder</name>
   <version>0.1</version>
   <vendor email="cope@eecs.oregonstate.edu" url="http://cope.eecs.oregonstate.edu">Oregon State University</vendor>
@@ -30,13 +30,13 @@
 
   <application-components>
     <!-- Add your application components here -->
-      <component>
-          <implementation-class>edu.oregonstate.cope.intellij.recorder.COPEComponent</implementation-class>
-      </component>
   </application-components>
 
   <project-components>
     <!-- Add your project components here -->
+    <component>
+        <implementation-class>edu.oregonstate.cope.intellij.recorder.COPEComponent</implementation-class>
+    </component>
   </project-components>
 
   <actions>
