@@ -194,7 +194,7 @@ public class Survey extends JDialog {
         this.email = getRandomEmailIfAbsent(emailTextField.getText());
         System.out.println("Email: "+this.email);
         System.out.println("JSON: "+surveyAnswers);
-        //dispose();
+        dispose();
     }
 
     private void onCancel() {

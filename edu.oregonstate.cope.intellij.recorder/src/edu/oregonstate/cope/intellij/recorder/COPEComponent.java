@@ -60,6 +60,9 @@ public class COPEComponent implements ProjectComponent {
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
 
+        workspaceDirectory = storageManager.getLocalStorage().getAbsoluteFile().toPath();
+        permanentDirectory = storageManager.getBundleStorage().getAbsoluteFile().toPath();
+
 
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         if (statusBar != null) {
@@ -136,28 +139,33 @@ public class COPEComponent implements ProjectComponent {
         return SURVEY_FILENAME;
     }
 
-    protected void doNoFileExists(File workspaceFile, File permanentFile) throws IOException {
+    protected void doNoFileExists(final File workspaceFile, final File permanentFile) throws IOException {
 
-        Survey dialog = new Survey();
-        dialog.pack();
-        dialog.setVisible(true);
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                Survey dialog = new Survey();
+                dialog.pack();
+                dialog.setVisible(true);
 
-        JSONObject survey = dialog.getSurveyResults();
-        String email = dialog.getEmail();
 
-//        SurveyProvider sw;
-//        if (Platform.inDevelopmentMode())
-//            sw = SurveyWizard.takeFakeSurvey();
-//        else
-//            sw = SurveyWizard.takeRealSurvey();
-//
-//        writeContentsToFile(workspaceFile.toPath(), sw.getSurveyResults());
-//        writeContentsToFile(permanentFile.toPath(), sw.getSurveyResults());
-//
+                JSONObject survey = dialog.getSurveyResults();
+                String email = dialog.getEmail();
 
-        writeContentsToFile(workspaceFile.toPath(), survey.toString());
-        writeContentsToFile(permanentFile.toPath(), survey.toString());
-        handleEmail(email);
+                try {
+                    writeContentsToFile(workspaceFile.toPath(), survey.toString());
+                    writeContentsToFile(permanentFile.toPath(), survey.toString());
+                    handleEmail(email);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Thread t = new Thread(r);
+        t.start();
+
+
+
     }
 
     private void handleEmail(String email) throws IOException {
