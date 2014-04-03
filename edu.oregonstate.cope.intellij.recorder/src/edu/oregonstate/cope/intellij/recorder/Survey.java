@@ -346,4 +346,11 @@ public class Survey extends JDialog {
         else
             return email.trim();
     }
+
+    public String getEmail(){
+        return email;
+    }
+    public JSONObject getsurveyAnswers(){
+        return surveyAnswers;
+    }
 }
