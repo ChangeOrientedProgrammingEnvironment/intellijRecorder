@@ -26,8 +26,6 @@ public class COPEComponent implements ProjectComponent {
 
     public static final String ID = "edu.oregonstate.cope.intellij.recorder";
 
-    //UPDATE CODE
-
     COPEStatus status;
     protected Path workspaceDirectory;
     protected Path permanentDirectory;
