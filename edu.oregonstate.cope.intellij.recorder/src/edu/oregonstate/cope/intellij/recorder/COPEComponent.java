@@ -16,6 +16,7 @@ import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class COPEComponent implements ProjectComponent {
 
     public COPEComponent(Project project) {
         this.project = project;
+        componentMap = new HashMap<Project, COPEComponent>();
     }
 
     @Override
