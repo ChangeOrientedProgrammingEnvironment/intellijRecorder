@@ -11,9 +11,13 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.fileSender.FileSender;
+import edu.oregonstate.cope.fileSender.FileSenderParams;
 import org.jetbrains.annotations.NotNull;
+import org.quartz.SchedulerException;
 
 import java.io.File;
+import java.text.ParseException;
 
 /**
  * Created by caius on 3/3/14.
@@ -44,10 +48,11 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
-
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
+
+        initFileSender();
     }
 
     @Override
@@ -63,6 +68,9 @@ public class COPEComponent implements ProjectComponent {
     public RecorderFacade getRecorder() {
         return recorder;
     }
+    public IntelliJStorageManager getStorageManager() {
+        return storageManager;
+    }
 
     public boolean fileIsInProject(VirtualFile file) {
         ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
@@ -72,5 +80,18 @@ public class COPEComponent implements ProjectComponent {
 
     public boolean fileIsInCOPEStructure(VirtualFile file) {
         return storageManager.isPathInManagedStorage(file.getPath());
+    }
+
+    private void initFileSender() {
+        try {
+            new FileSender(new FileSenderParams(
+                recorder.getCopeLogger(),
+                storageManager.getLocalStorage(),
+                recorder.getWorkspaceProperties(),
+                recorder.getWorkspaceID()
+            ));
+        } catch (ParseException | SchedulerException e) {
+            recorder.getCopeLogger().error(e, e.getMessage());
+        }
     }
 }
