@@ -2,9 +2,7 @@ package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.execution.testframework.AbstractTestProxy;
 import com.intellij.execution.testframework.TestStatusListener;
-import com.intellij.execution.testframework.sm.runner.SMTestProxy;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.project.ProjectManager;
+import com.intellij.rt.execution.junit.states.PoolOfTestStates;
 
 /**
  * Created by mihai on 4/8/14.
@@ -45,7 +43,23 @@ public class TestListener extends TestStatusListener{
             print(test.getDuration() + "");
             print("isPassed:" + test.isPassed());
             print("isDefect:" + test.isDefect());
+            Result testResult = computeTestResult(test);
+            print(testResult.toString());
         }
+    private Result computeTestResult(AbstractTestProxy test) {
+        if(test.isPassed())
+            return Result.OK;
+
+        int testMagnitude = test.getMagnitude();
+
+        if (testMagnitude == PoolOfTestStates.ERROR_INDEX)
+            return Result.ERROR;
+
+        if (testMagnitude == PoolOfTestStates.FAILED_INDEX)
+            return Result.FAILURE;
+
+        System.out.println("!!! Undefined test state: " + testMagnitude);
+        return Result.UNDEFINED;
     }
 
     private void print(Object s){
