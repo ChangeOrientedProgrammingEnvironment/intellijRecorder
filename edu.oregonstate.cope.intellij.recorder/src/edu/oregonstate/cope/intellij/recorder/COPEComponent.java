@@ -1,21 +1,32 @@
 package edu.oregonstate.cope.intellij.recorder;
 
-import com.intellij.execution.*;
+import com.intellij.execution.BeforeRunTask;
+import com.intellij.execution.BeforeRunTaskProvider;
+import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.extensions.Extensions;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.vfs.*;
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +38,12 @@ public class COPEComponent implements ProjectComponent {
 
     public static final String ID = "edu.oregonstate.cope.intellij.recorder";
 
+    COPEStatus status;
+    protected Path workspaceDirectory;
+    protected Path permanentDirectory;
+    private static final String SURVEY_FILENAME = "survey.txt";
+    public final static String EMAIL_FILENAME = "email.txt";
+
     private final String IDE = "IDEA";
     private Project project;
     private RecorderFacade recorder;
@@ -35,7 +52,8 @@ public class COPEComponent implements ProjectComponent {
     private RunManagerEx runManager;
     private BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider;
 
-    private static Map<Project,COPEComponent> componentMap = null;
+    private static Map<Project, COPEComponent> componentMap = null;
+
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -44,12 +62,12 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void initComponent() {
-        componentMap.put(project,this);
+        componentMap.put(project, this);
     }
 
     @Override
     public void disposeComponent() {
-        componentMap.put(project,null);
+        componentMap.put(project, null);
     }
 
     public static COPEComponent getInstance(Project project) {
@@ -76,6 +94,24 @@ public class COPEComponent implements ProjectComponent {
         providerID = beforeRunTaskProvider.getId();
         for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
             addCOPETaskToRunConfiguration(runConfiguration);
+        }
+
+        workspaceDirectory = storageManager.getLocalStorage().getAbsoluteFile().toPath();
+        permanentDirectory = storageManager.getBundleStorage().getAbsoluteFile().toPath();
+
+
+        StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+        if (statusBar != null) {
+            status = new COPEStatus();
+            statusBar.addWidget(status);
+        }
+
+
+        try {
+            CheckIfSurveyExists();
+        } catch (IOException e) {
+            //WHAT SHOULD WE DO WITH THIS ERROR?
+            e.printStackTrace();
         }
     }
 
@@ -105,6 +141,7 @@ public class COPEComponent implements ProjectComponent {
         return beforeRunTaskProvider;
     }
 
+
     @Override
     public void projectClosed() {
 
@@ -129,4 +166,77 @@ public class COPEComponent implements ProjectComponent {
         return storageManager.isPathInManagedStorage(file.getPath());
     }
 
+    private void CheckIfSurveyExists() throws IOException {
+        String fileName = getFileName();
+        File workspaceFile = workspaceDirectory.resolve(fileName).toFile();
+        File permanentFile = permanentDirectory.resolve(fileName).toFile();
+
+        if (workspaceFile.exists() && permanentFile.exists()) {
+            // System.out.println(this.getClass() + " both files exist");
+            //DO NOTHING
+        } else if (!workspaceFile.exists() && permanentFile.exists()) {
+            // System.out.println(this.getClass() + " only permanent");
+            doOnlyPermanentFileExists(workspaceFile, permanentFile);
+        } else if (workspaceFile.exists() && !permanentFile.exists()) {
+            // System.out.println(this.getClass() + " only workspace");
+            doOnlyWorkspaceFileExists(workspaceFile, permanentFile);
+        } else if (!workspaceFile.exists() && !permanentFile.exists()) {
+            // System.out.println(this.getClass() + " neither files exist");
+            doNoFileExists(workspaceFile, permanentFile);
+        }
+    }
+
+    protected void doOnlyWorkspaceFileExists(File workspaceFile, File permanentFile) throws IOException {
+        Files.copy(workspaceFile.toPath(), permanentFile.toPath());
+    }
+
+    protected void doOnlyPermanentFileExists(File workspaceFile, File permanentFile) throws IOException {
+        Files.copy(permanentFile.toPath(), workspaceFile.toPath());
+    }
+
+
+    protected String getFileName() {
+        return SURVEY_FILENAME;
+    }
+
+    protected void doNoFileExists(final File workspaceFile, final File permanentFile) throws IOException {
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                Survey dialog = new Survey();
+                dialog.pack();
+                dialog.setVisible(true);
+
+
+                JSONObject survey = dialog.getSurveyResults();
+                String email = dialog.getEmail();
+
+                try {
+                    writeContentsToFile(workspaceFile.toPath(), survey.toString());
+                    writeContentsToFile(permanentFile.toPath(), survey.toString());
+                    handleEmail(email);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Thread t = new Thread(r);
+        t.start();
+    }
+
+    private void handleEmail(String email) throws IOException {
+        doFor(permanentDirectory, email);
+        doFor(workspaceDirectory, email);
+    }
+
+    private void doFor(Path parentDirectory, String email) throws IOException {
+        Path emailFile = parentDirectory.resolve(EMAIL_FILENAME);
+        Files.deleteIfExists(emailFile);
+        writeContentsToFile(emailFile, email);
+    }
+
+    protected void writeContentsToFile(Path filePath, String fileContents) throws IOException {
+        Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
+    }
 }
