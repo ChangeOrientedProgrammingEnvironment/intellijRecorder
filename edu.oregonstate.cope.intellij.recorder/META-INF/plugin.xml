@@ -47,4 +47,6 @@
     <!-- Add your actions here -->
   </actions>
 
+  <depends>JUnit</depends>
+
 </idea-plugin>
