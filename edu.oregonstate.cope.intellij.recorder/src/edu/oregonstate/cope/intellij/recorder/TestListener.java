@@ -1,8 +1,17 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.execution.Location;
+import com.intellij.execution.junit2.TestProxy;
 import com.intellij.execution.testframework.AbstractTestProxy;
 import com.intellij.execution.testframework.TestStatusListener;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.rt.execution.junit.states.PoolOfTestStates;
+
+import java.util.Arrays;
 
 /**
  * Created by mihai on 4/8/14.
@@ -16,7 +25,7 @@ public class TestListener extends TestStatusListener{
         /** state that describes that the test result is 'OK' */
         public static final Result OK= new Result("OK"); //$NON-NLS-1$
         /** state that describes that the test result is 'Error' */
-        public static final Result ERROR= new Result("Esrror"); //$NON-NLS-1$
+        public static final Result ERROR= new Result("Error"); //$NON-NLS-1$
         /** state that describes that the test result is 'Failure' */
         public static final Result FAILURE= new Result("Failure"); //$NON-NLS-1$
         /** state that describes that the test result is 'Ignored' */
@@ -38,14 +47,37 @@ public class TestListener extends TestStatusListener{
         for (AbstractTestProxy test: root.getAllTests()){
             if (!test.isLeaf())
                 continue;
-            print(test.getName());
-            print(test.isLeaf());
-            print(test.getDuration() + "");
-            print("isPassed:" + test.isPassed());
-            print("isDefect:" + test.isDefect());
+
+            TestProxy t = (TestProxy) root;
+            System.err.println(t.getName());
+
             Result testResult = computeTestResult(test);
-            print(testResult.toString());
+
+            Location location = getLocation(test);
+
+            String qualifiedName = constructQualifiedName(location, test);
         }
+
+    }
+
+    private String constructQualifiedName(Location location, AbstractTestProxy test) {
+        return null;
+    }
+
+    private Location getLocation(AbstractTestProxy test) {
+        Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
+
+        for (Project openedProject : openProjects) {
+            Location location = test.getLocation(openedProject, GlobalSearchScope.allScope(openedProject));
+
+            if (location != null) {
+                return location;
+            }
+        }
+
+        return null;
+    }
+
     private Result computeTestResult(AbstractTestProxy test) {
         if(test.isPassed())
             return Result.OK;
