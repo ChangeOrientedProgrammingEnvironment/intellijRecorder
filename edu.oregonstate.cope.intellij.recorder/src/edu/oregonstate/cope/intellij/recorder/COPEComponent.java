@@ -41,8 +41,6 @@ public class COPEComponent implements ProjectComponent {
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
 
-
-
     public COPEComponent(Project project) {
         this.project = project;
     }
@@ -116,13 +114,13 @@ public class COPEComponent implements ProjectComponent {
     private void initFileSender() {
         try {
             new FileSender(new FileSenderParams(
-                recorder.getCopeLogger(),
+                recorder.getLogger(),
                 storageManager.getLocalStorage(),
                 recorder.getWorkspaceProperties(),
                 recorder.getWorkspaceID()
             ));
         } catch (ParseException | SchedulerException e) {
-            recorder.getCopeLogger().error(e, e.getMessage());
+            recorder.getLogger().error(e, e.getMessage());
         }
     }
 
@@ -183,9 +181,6 @@ public class COPEComponent implements ProjectComponent {
         };
         Thread t = new Thread(r);
         t.start();
-
-
-
     }
 
     private void handleEmail(String email) throws IOException {
