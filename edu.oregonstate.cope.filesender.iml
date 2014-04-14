@@ -10,6 +10,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="edu.oregonstate.cope.thirdparty" />
+    <orderEntry type="module" module-name="edu.oregonstate.cope.clientrecorder" />
   </component>
 </module>
 
