@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.filesender/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.filesender">
+      <sourceFolder url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.filesender/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/recorderInfra/edu.oregonstate.cope.filesender/resources" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
+
