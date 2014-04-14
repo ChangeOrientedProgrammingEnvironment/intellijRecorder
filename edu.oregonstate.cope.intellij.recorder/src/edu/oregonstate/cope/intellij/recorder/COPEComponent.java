@@ -10,7 +10,11 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.fileSender.FileSender;
+import edu.oregonstate.cope.fileSender.FileSenderParams;
 import org.jetbrains.annotations.NotNull;
+import org.quartz.SchedulerException;
+import java.text.ParseException;
 import org.json.simple.JSONObject;
 
 import java.io.File;
@@ -37,8 +41,6 @@ public class COPEComponent implements ProjectComponent {
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
 
-
-
     public COPEComponent(Project project) {
         this.project = project;
     }
@@ -55,10 +57,11 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
-
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
+
+        initFileSender();
 
         workspaceDirectory = storageManager.getLocalStorage().getAbsoluteFile().toPath();
         permanentDirectory = storageManager.getBundleStorage().getAbsoluteFile().toPath();
@@ -94,6 +97,9 @@ public class COPEComponent implements ProjectComponent {
     public RecorderFacade getRecorder() {
         return recorder;
     }
+    public IntelliJStorageManager getStorageManager() {
+        return storageManager;
+    }
 
     public boolean fileIsInProject(VirtualFile file) {
         ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
@@ -105,6 +111,18 @@ public class COPEComponent implements ProjectComponent {
         return storageManager.isPathInManagedStorage(file.getPath());
     }
 
+    private void initFileSender() {
+        try {
+            new FileSender(new FileSenderParams(
+                recorder.getLogger(),
+                storageManager.getLocalStorage(),
+                recorder.getWorkspaceProperties(),
+                recorder.getWorkspaceID()
+            ));
+        } catch (ParseException | SchedulerException e) {
+            recorder.getLogger().error(e, e.getMessage());
+        }
+    }
 
     private void CheckIfSurveyExists() throws IOException {
         String fileName = getFileName();
@@ -163,9 +181,6 @@ public class COPEComponent implements ProjectComponent {
         };
         Thread t = new Thread(r);
         t.start();
-
-
-
     }
 
     private void handleEmail(String email) throws IOException {
@@ -182,6 +197,5 @@ public class COPEComponent implements ProjectComponent {
     protected void writeContentsToFile(Path filePath, String fileContents) throws IOException {
         Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
     }
-
 
 }
