@@ -55,8 +55,13 @@ public class TestListener extends TestStatusListener{
 
             Location location = getLocation(test);
             String qualifiedTestName = constructQualifiedName(location, test);
-        }
 
+            Double testTime = getTestTimeInSeconds(test);
+        }
+    }
+
+    private Double getTestTimeInSeconds(AbstractTestProxy test) {
+        return test.getDuration() / 1000.0;
     }
 
     private String constructQualifiedName(Location location, AbstractTestProxy test) {
