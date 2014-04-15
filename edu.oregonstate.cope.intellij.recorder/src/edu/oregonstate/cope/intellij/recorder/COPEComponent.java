@@ -16,17 +16,21 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.fileSender.FileSender;
+import edu.oregonstate.cope.fileSender.FileSenderParams;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
+import org.quartz.SchedulerException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +58,6 @@ public class COPEComponent implements ProjectComponent {
 
     private static Map<Project, COPEComponent> componentMap = null;
 
-
     public COPEComponent(Project project) {
         this.project = project;
         componentMap = new HashMap<Project, COPEComponent>();
@@ -78,7 +81,6 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
-
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
@@ -95,6 +97,8 @@ public class COPEComponent implements ProjectComponent {
         for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
             addCOPETaskToRunConfiguration(runConfiguration);
         }
+
+        initFileSender();
 
         workspaceDirectory = storageManager.getLocalStorage().getAbsoluteFile().toPath();
         permanentDirectory = storageManager.getBundleStorage().getAbsoluteFile().toPath();
@@ -155,6 +159,9 @@ public class COPEComponent implements ProjectComponent {
     public RecorderFacade getRecorder() {
         return recorder;
     }
+    public IntelliJStorageManager getStorageManager() {
+        return storageManager;
+    }
 
     public boolean fileIsInProject(VirtualFile file) {
         ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
@@ -164,6 +171,19 @@ public class COPEComponent implements ProjectComponent {
 
     public boolean fileIsInCOPEStructure(VirtualFile file) {
         return storageManager.isPathInManagedStorage(file.getPath());
+    }
+
+    private void initFileSender() {
+        try {
+            new FileSender(new FileSenderParams(
+                recorder.getLogger(),
+                storageManager.getLocalStorage(),
+                recorder.getWorkspaceProperties(),
+                recorder.getWorkspaceID()
+            ));
+        } catch (ParseException | SchedulerException e) {
+            recorder.getLogger().error(e, e.getMessage());
+        }
     }
 
     private void CheckIfSurveyExists() throws IOException {
