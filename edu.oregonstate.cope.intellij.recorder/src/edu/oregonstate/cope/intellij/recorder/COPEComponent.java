@@ -40,6 +40,8 @@ public class COPEComponent implements ProjectComponent {
     private Project project;
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
+    private FileListener fileListener;
+    private EditorFactoryListener editorFactoryListener;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -57,9 +59,11 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
-        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
+        editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
+        EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
 
-        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
+        fileListener = new FileListener(this, recorder);
+        VirtualFileManager.getInstance().addVirtualFileListener(fileListener);
 
         initFileSender();
 
@@ -86,7 +90,8 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void projectClosed() {
-
+        VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
+        EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
     }
 
     @NotNull
