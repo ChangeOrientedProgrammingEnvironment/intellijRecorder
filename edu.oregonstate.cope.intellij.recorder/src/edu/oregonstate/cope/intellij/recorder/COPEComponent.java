@@ -75,7 +75,7 @@ public class COPEComponent implements ProjectComponent {
 
 
         try {
-            CheckIfSurveyExists();
+            doInstallProcess();
         } catch (IOException e) {
             //WHAT SHOULD WE DO WITH THIS ERROR?
             e.printStackTrace();
@@ -124,7 +124,7 @@ public class COPEComponent implements ProjectComponent {
         }
     }
 
-    private void CheckIfSurveyExists() throws IOException {
+    private void doInstallProcess() throws IOException {
         String fileName = getFileName();
         File workspaceFile = workspaceDirectory.resolve(fileName).toFile();
         File permanentFile = permanentDirectory.resolve(fileName).toFile();
