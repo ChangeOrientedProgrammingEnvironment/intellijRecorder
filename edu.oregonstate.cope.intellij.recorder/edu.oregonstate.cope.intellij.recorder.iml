@@ -9,6 +9,17 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="edu.oregonstate.cope.clientrecorder" exported="" />
+    <orderEntry type="module" module-name="edu.oregonstate.cope.filesender" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../recorderInfra/edu.oregonstate.cope.thirdparty/json-simple-1.1.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../recorderInfra/edu.oregonstate.cope.thirdparty/quartz-1.8.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
