@@ -143,7 +143,10 @@ public class COPEComponent implements ProjectComponent {
     }
 
     private void initWorkspace() {
+        takeSnapshotOfProject(project);
+    }
 
+    private void takeSnapshotOfProject(Project project) {
     }
 
     protected void doOnlyWorkspaceFileExists(File workspaceFile, File permanentFile) throws IOException {
