@@ -2,11 +2,14 @@ package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.execution.Location;
 import com.intellij.execution.junit2.TestProxy;
+import com.intellij.execution.junit2.info.MethodLocation;
 import com.intellij.execution.testframework.AbstractTestProxy;
 import com.intellij.execution.testframework.TestStatusListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.rt.execution.junit.states.PoolOfTestStates;
@@ -48,19 +51,23 @@ public class TestListener extends TestStatusListener{
             if (!test.isLeaf())
                 continue;
 
-            TestProxy t = (TestProxy) root;
-            System.err.println(t.getName());
-
             Result testResult = computeTestResult(test);
 
             Location location = getLocation(test);
-
-            String qualifiedName = constructQualifiedName(location, test);
+            String qualifiedTestName = constructQualifiedName(location, test);
         }
 
     }
 
     private String constructQualifiedName(Location location, AbstractTestProxy test) {
+        if(location instanceof MethodLocation) {
+            MethodLocation methodLocation = (MethodLocation) location;
+            PsiClass testClass = methodLocation.getContainingClass();
+
+            return testClass.getQualifiedName() + "." + methodLocation.getPsiElement().getName();
+        }
+
+        System.err.println("Is not a MethodLocation: " + location.getClass());
         return null;
     }
 
