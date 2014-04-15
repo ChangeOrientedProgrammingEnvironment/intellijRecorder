@@ -57,6 +57,10 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
+
+        if (recorder.isFirstStart())
+            initWorkspace();
+
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
@@ -134,11 +138,9 @@ public class COPEComponent implements ProjectComponent {
         } else if (!workspaceFile.exists() && permanentFile.exists()) {
             doOnlyPermanentFileExists(workspaceFile, permanentFile);
         } else if (workspaceFile.exists() && !permanentFile.exists()) {
-            initWorkspace();
             doOnlyWorkspaceFileExists(workspaceFile, permanentFile);
         } else if (!workspaceFile.exists() && !permanentFile.exists()) {
             doNoFileExists(workspaceFile, permanentFile);
-            initWorkspace();
         }
     }
 
