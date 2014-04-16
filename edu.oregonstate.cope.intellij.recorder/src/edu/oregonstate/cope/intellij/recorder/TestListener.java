@@ -57,6 +57,10 @@ public class TestListener extends TestStatusListener{
             String qualifiedTestName = constructQualifiedName(project, test);
 
             Double testTime = getTestTimeInSeconds(test);
+
+            COPEComponent copeComponent = project.getComponent(COPEComponent.class);
+
+            copeComponent.getRecorder().getClientRecorder().recordTestRun(qualifiedTestName, testResult.toString(), testTime);
         }
     }
 
