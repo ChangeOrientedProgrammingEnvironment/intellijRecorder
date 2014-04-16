@@ -45,8 +45,6 @@ public class TestListener extends TestStatusListener{
 
     @Override
     public void testSuiteFinished(AbstractTestProxy root) {
-        int i = 1;
-
         for (AbstractTestProxy test: root.getAllTests()){
             if (!test.isLeaf())
                 continue;
@@ -56,15 +54,13 @@ public class TestListener extends TestStatusListener{
     }
 
     private void recordTestRun(AbstractTestProxy test){
-        Result testResult = computeTestResult(test);
-
         Project project= getProject(test);
-        String qualifiedTestName = constructQualifiedName(project, test);
 
+        String qualifiedTestName = constructQualifiedName(test, project);
+        Result testResult = computeTestResult(test);
         Double testTime = getTestTimeInSeconds(test);
 
         COPEComponent copeComponent = project.getComponent(COPEComponent.class);
-
         copeComponent.getRecorder().getClientRecorder().recordTestRun(qualifiedTestName, testResult.toString(), testTime);
     }
 
@@ -72,7 +68,7 @@ public class TestListener extends TestStatusListener{
         return test.getDuration() / 1000.0;
     }
 
-    private String constructQualifiedName(Project project, AbstractTestProxy test) {
+    private String constructQualifiedName(AbstractTestProxy test, Project project) {
         Location location = getLocation(test, project);
 
         if(location instanceof MethodLocation) {
@@ -116,11 +112,7 @@ public class TestListener extends TestStatusListener{
         if (testMagnitude == PoolOfTestStates.FAILED_INDEX)
             return Result.FAILURE;
 
-        System.out.println("!!! Undefined test state: " + testMagnitude);
+        System.err.println("!!! Undefined test state: " + testMagnitude);
         return Result.UNDEFINED;
-    }
-
-    private void print(Object s){
-        System.out.println(s);
     }
 }
