@@ -51,17 +51,21 @@ public class TestListener extends TestStatusListener{
             if (!test.isLeaf())
                 continue;
 
-            Result testResult = computeTestResult(test);
-
-            Project project= getProject(test);
-            String qualifiedTestName = constructQualifiedName(project, test);
-
-            Double testTime = getTestTimeInSeconds(test);
-
-            COPEComponent copeComponent = project.getComponent(COPEComponent.class);
-
-            copeComponent.getRecorder().getClientRecorder().recordTestRun(qualifiedTestName, testResult.toString(), testTime);
+            recordTestRun(test);
         }
+    }
+
+    private void recordTestRun(AbstractTestProxy test){
+        Result testResult = computeTestResult(test);
+
+        Project project= getProject(test);
+        String qualifiedTestName = constructQualifiedName(project, test);
+
+        Double testTime = getTestTimeInSeconds(test);
+
+        COPEComponent copeComponent = project.getComponent(COPEComponent.class);
+
+        copeComponent.getRecorder().getClientRecorder().recordTestRun(qualifiedTestName, testResult.toString(), testTime);
     }
 
     private Double getTestTimeInSeconds(AbstractTestProxy test) {
