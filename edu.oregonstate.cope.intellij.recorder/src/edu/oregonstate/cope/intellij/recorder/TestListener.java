@@ -53,8 +53,8 @@ public class TestListener extends TestStatusListener{
 
             Result testResult = computeTestResult(test);
 
-            Location location = getLocation(test);
-            String qualifiedTestName = constructQualifiedName(location, test);
+            Project project= getProject(test);
+            String qualifiedTestName = constructQualifiedName(project, test);
 
             Double testTime = getTestTimeInSeconds(test);
         }
@@ -64,7 +64,9 @@ public class TestListener extends TestStatusListener{
         return test.getDuration() / 1000.0;
     }
 
-    private String constructQualifiedName(Location location, AbstractTestProxy test) {
+    private String constructQualifiedName(Project project, AbstractTestProxy test) {
+        Location location = getLocation(test, project);
+
         if(location instanceof MethodLocation) {
             MethodLocation methodLocation = (MethodLocation) location;
             PsiClass testClass = methodLocation.getContainingClass();
@@ -76,18 +78,22 @@ public class TestListener extends TestStatusListener{
         return null;
     }
 
-    private Location getLocation(AbstractTestProxy test) {
+    private Project getProject(AbstractTestProxy test) {
         Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
 
         for (Project openedProject : openProjects) {
-            Location location = test.getLocation(openedProject, GlobalSearchScope.allScope(openedProject));
+            Location location = getLocation(test, openedProject);
 
             if (location != null) {
-                return location;
+                return openedProject;
             }
         }
 
         return null;
+    }
+
+    private Location getLocation(AbstractTestProxy test, Project project){
+        return test.getLocation(project, GlobalSearchScope.allScope(project));
     }
 
     private Result computeTestResult(AbstractTestProxy test) {
