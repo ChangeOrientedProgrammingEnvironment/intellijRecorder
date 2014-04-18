@@ -55,12 +55,10 @@ public class EclipseExporter {
 
     public void export() {
         Module[] modules = ModuleManager.getInstance(project).getModules();
-        List<Module> compatibleModules = new ArrayList<>();
-        List<Module> incompatibleModules = new ArrayList<>();
         for (Module module : modules) {
             boolean wasEclipseFriendly = true;
             if (!isModuleEclipseFriendly(module)) {
-                makeModuleEclipseFriendly(compatibleModules, incompatibleModules, module);
+                makeModuleEclipseFriendly(module);
                 wasEclipseFriendly = false;
             }
             String storageRoot = getStorageRoot(module);
@@ -105,13 +103,11 @@ public class EclipseExporter {
     }
 
 
-    private void makeModuleEclipseFriendly(List<Module> compatibleModules, List<Module> incompatibleModules, Module module) {
+    private void makeModuleEclipseFriendly(Module module) {
         if (!JpsEclipseClasspathSerializer.CLASSPATH_STORAGE_ID.equals(ClassPathStorageUtil.getStorageType(module))) {
             try {
                 ClasspathStorage.getProvider(JpsEclipseClasspathSerializer.CLASSPATH_STORAGE_ID).assertCompatible(ModuleRootManager.getInstance(module));
-                compatibleModules.add(module);
             } catch (ConfigurationException e1) {
-                incompatibleModules.add(module);
                 return;
             }
         }
