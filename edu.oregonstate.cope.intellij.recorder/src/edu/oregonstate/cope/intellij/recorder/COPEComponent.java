@@ -57,6 +57,8 @@ public class COPEComponent implements ProjectComponent {
     private BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider;
 
     private static Map<Project, COPEComponent> componentMap = null;
+    private FileListener fileListener;
+    private EditorFactoryListener editorFactoryListener;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -81,7 +83,8 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
-        EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener(this, recorder.getClientRecorder()));
+        editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
+        EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
 
         VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
         runManager = (RunManagerEx) RunManagerEx.getInstance(project);
@@ -148,7 +151,8 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void projectClosed() {
-
+        VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
+        EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
     }
 
     @NotNull

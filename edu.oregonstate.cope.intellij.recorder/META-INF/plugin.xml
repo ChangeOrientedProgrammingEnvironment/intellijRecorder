@@ -29,7 +29,11 @@
       <stepsBeforeRunProvider implementation="edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider"></stepsBeforeRunProvider>
   </extensions>
 
-  <application-components>
+  <extensions defaultExtensionNs="com.intellij">
+    <testStatusListener implementation="edu.oregonstate.cope.intellij.recorder.TestListener">  </testStatusListener>
+  </extensions>
+
+    <application-components>
     <!-- Add your application components here -->
   </application-components>
 
@@ -43,5 +47,7 @@
   <actions>
     <!-- Add your actions here -->
   </actions>
+
+  <depends>JUnit</depends>
 
 </idea-plugin>
