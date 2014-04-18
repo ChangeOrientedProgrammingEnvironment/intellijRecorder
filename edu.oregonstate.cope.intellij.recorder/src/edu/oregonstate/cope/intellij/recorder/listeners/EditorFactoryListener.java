@@ -1,10 +1,11 @@
-package edu.oregonstate.cope.intellij.recorder;
+package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.EditorFactoryEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.oregonstate.cope.clientRecorder.ClientRecorder;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**

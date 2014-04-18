@@ -1,4 +1,4 @@
-package edu.oregonstate.cope.intellij.recorder;
+package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.execution.Location;
 import com.intellij.execution.junit2.info.MethodLocation;
@@ -9,6 +9,7 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.rt.execution.junit.states.PoolOfTestStates;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 
 /**
  * Created by mihai on 4/8/14.
