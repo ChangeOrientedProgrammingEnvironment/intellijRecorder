@@ -56,27 +56,23 @@ public class COPEComponent implements ProjectComponent {
     private RunManagerEx runManager;
     private BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider;
 
-    private static Map<Project, COPEComponent> componentMap = null;
     private FileListener fileListener;
     private EditorFactoryListener editorFactoryListener;
 
     public COPEComponent(Project project) {
         this.project = project;
-        componentMap = new HashMap<Project, COPEComponent>();
     }
 
     @Override
     public void initComponent() {
-        componentMap.put(project, this);
     }
 
     @Override
     public void disposeComponent() {
-        componentMap.put(project, null);
     }
 
     public static COPEComponent getInstance(Project project) {
-        return componentMap.get(project);
+        return project.getComponent(COPEComponent.class);
     }
 
     @Override
