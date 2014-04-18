@@ -28,7 +28,11 @@
     <!-- Add your extensions here -->
   </extensions>
 
-  <application-components>
+  <extensions defaultExtensionNs="com.intellij">
+    <testStatusListener implementation="edu.oregonstate.cope.intellij.recorder.TestListener">  </testStatusListener>
+  </extensions>
+
+    <application-components>
     <!-- Add your application components here -->
   </application-components>
 
@@ -44,5 +48,6 @@
   </actions>
 
   <depends>org.jetbrains.idea.eclipse</depends>
+  <depends>JUnit</depends>
 
 </idea-plugin>
