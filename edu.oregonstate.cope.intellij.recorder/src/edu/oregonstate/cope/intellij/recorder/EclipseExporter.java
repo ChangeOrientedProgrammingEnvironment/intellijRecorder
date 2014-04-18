@@ -58,16 +58,25 @@ public class EclipseExporter {
         List<Module> compatibleModules = new ArrayList<>();
         List<Module> incompatibleModules = new ArrayList<>();
         for (Module module : modules) {
-            makeModuleEclipseFriendly(compatibleModules, incompatibleModules, module);
+            boolean wasEclipseFriendly = true;
+            if (!isModuleEclipseFriendly(module)) {
+                makeModuleEclipseFriendly(compatibleModules, incompatibleModules, module);
+                wasEclipseFriendly = false;
+            }
+            String storageRoot = getStorageRoot(module);
             File zipFile = createZipFile(module.getName(), localStorage);
             try {
                 ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-                String storageRoot = getStorageRoot(module);
                 ZipUtil.addDirToZipRecursively(outputStream, null, new File(storageRoot), module.getName(), null, null);
                 outputStream.close();
             } catch (FileNotFoundException e) {
             } catch (IOException e) {
                 System.out.println("MASSIVE FAILURE ADDING CONTENTS TO THE ZIP FILE");
+            }
+
+            if (!wasEclipseFriendly) {
+                getClassPathFile(storageRoot).delete();
+                getProjectFile(storageRoot).delete();
             }
         }
 
@@ -79,6 +88,22 @@ public class EclipseExporter {
 
         project.save();
     }
+
+    private boolean isModuleEclipseFriendly(Module module) {
+        String storageRoot = getStorageRoot(module);
+        File classpathFile = getClassPathFile(storageRoot);
+        File projectFile = getProjectFile(storageRoot);
+        return classpathFile.exists() && projectFile.exists();
+    }
+
+    private File getProjectFile(String storageRoot) {
+        return Paths.get(storageRoot, ".project").toFile();
+    }
+
+    private File getClassPathFile(String storageRoot) {
+        return Paths.get(storageRoot, ".classpath").toFile();
+    }
+
 
     private void makeModuleEclipseFriendly(List<Module> compatibleModules, List<Module> incompatibleModules, Module module) {
         if (!JpsEclipseClasspathSerializer.CLASSPATH_STORAGE_ID.equals(ClassPathStorageUtil.getStorageType(module))) {
