@@ -4,6 +4,7 @@ import com.intellij.execution.BeforeRunTask;
 import com.intellij.execution.BeforeRunTaskProvider;
 import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.extensions.Extensions;
@@ -21,12 +22,14 @@ import edu.oregonstate.cope.fileSender.FileSenderParams;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
+import edu.oregonstate.cope.intellij.recorder.listeners.CommandExecutionListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.quartz.SchedulerException;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,6 +62,8 @@ public class COPEComponent implements ProjectComponent {
     private FileListener fileListener;
     private EditorFactoryListener editorFactoryListener;
 
+    private CommandExecutionListener commandListener;
+
     public COPEComponent(Project project) {
         this.project = project;
     }
@@ -79,6 +84,10 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
+
+        commandListener = new CommandExecutionListener();
+        ActionManager.getInstance().addAnActionListener(commandListener);
+
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
         EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
 
