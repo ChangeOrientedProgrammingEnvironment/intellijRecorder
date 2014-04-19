@@ -79,6 +79,10 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
+
+        if (recorder.isFirstStart())
+            initWorkspace();
+
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
         EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
 
@@ -149,6 +153,7 @@ public class COPEComponent implements ProjectComponent {
     public void projectClosed() {
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
+        takeSnapshotOfProject(project);
     }
 
     @NotNull
@@ -192,18 +197,22 @@ public class COPEComponent implements ProjectComponent {
         File permanentFile = permanentDirectory.resolve(fileName).toFile();
 
         if (workspaceFile.exists() && permanentFile.exists()) {
-            // System.out.println(this.getClass() + " both files exist");
             //DO NOTHING
         } else if (!workspaceFile.exists() && permanentFile.exists()) {
-            // System.out.println(this.getClass() + " only permanent");
             doOnlyPermanentFileExists(workspaceFile, permanentFile);
         } else if (workspaceFile.exists() && !permanentFile.exists()) {
-            // System.out.println(this.getClass() + " only workspace");
             doOnlyWorkspaceFileExists(workspaceFile, permanentFile);
         } else if (!workspaceFile.exists() && !permanentFile.exists()) {
-            // System.out.println(this.getClass() + " neither files exist");
             doNoFileExists(workspaceFile, permanentFile);
         }
+    }
+
+    private void initWorkspace() {
+        takeSnapshotOfProject(project);
+    }
+
+    private void takeSnapshotOfProject(Project project) {
+        new EclipseExporter(project, storageManager.getLocalStorage(), recorder).export();
     }
 
     protected void doOnlyWorkspaceFileExists(File workspaceFile, File permanentFile) throws IOException {
