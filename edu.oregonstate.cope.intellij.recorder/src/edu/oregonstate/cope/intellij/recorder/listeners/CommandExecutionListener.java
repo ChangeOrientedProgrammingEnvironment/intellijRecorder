@@ -15,12 +15,11 @@ public class CommandExecutionListener implements AnActionListener {
 
     @Override
     public void beforeActionPerformed(AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent) {
-        if (isCopy(anAction)) {
+		if (isCopy(anAction)) {
             recordCopy();
         }
-        if (isCut(anAction)) {
+        if (isCut(anAction))
             cutInProgress = true;
-        }
         if (isPaste(anAction))
             pasteInProgress = true;
         if (isUndo(anAction))
@@ -48,7 +47,8 @@ public class CommandExecutionListener implements AnActionListener {
 
     private boolean isCopy(AnAction action) {
         return action instanceof com.intellij.ide.actions.CopyAction
-                || action instanceof com.intellij.openapi.editor.actions.CopyAction;
+                || action instanceof com.intellij.openapi.editor.actions.CopyAction
+				|| action instanceof com.intellij.ide.actions.CopyReferenceAction;
     }
 
     private boolean isCut(AnAction action) {
@@ -58,12 +58,13 @@ public class CommandExecutionListener implements AnActionListener {
 
     private boolean isPaste(AnAction action) {
         return action instanceof com.intellij.ide.actions.PasteAction
-                || action instanceof com.intellij.openapi.editor.actions.PasteAction;
+                || action instanceof com.intellij.openapi.editor.actions.PasteAction
+				|| action instanceof com.intellij.openapi.editor.actions.SimplePasteAction
+				|| action instanceof com.intellij.openapi.editor.actions.MultiplePasteAction;
     }
 
     private boolean isUndo(AnAction action) {
-        return action instanceof com.intellij.ide.actions.PasteAction
-                || action instanceof com.intellij.openapi.editor.actions.PasteAction;
+        return action instanceof com.intellij.ide.actions.UndoAction;
     }
 
     private boolean isRedo(AnAction action) {
