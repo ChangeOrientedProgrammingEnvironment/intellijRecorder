@@ -3,18 +3,21 @@ package edu.oregonstate.cope.intellij.recorder.listeners;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import edu.oregonstate.cope.clientRecorder.ChangeOrigin;
 import edu.oregonstate.cope.clientRecorder.ClientRecorder;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 
 /**
  * Created by caius on 3/3/14.
  */
 public class DocumentListener implements com.intellij.openapi.editor.event.DocumentListener {
 
-    private String filePath;
-    private ClientRecorder recorder;
+	private String filePath;
+	private ClientRecorder recorder;
+	private final CommandExecutionListener commandListener;
 
-    public DocumentListener(String filePath, ClientRecorder recorder) {
+    public DocumentListener(String filePath, CommandExecutionListener commanListener, ClientRecorder recorder) {
         this.filePath = filePath;
         this.recorder = recorder;
+		this.commandListener = commanListener;
     }
 
     @Override

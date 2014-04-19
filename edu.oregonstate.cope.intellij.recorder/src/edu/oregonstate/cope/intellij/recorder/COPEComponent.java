@@ -268,4 +268,8 @@ public class COPEComponent implements ProjectComponent {
     protected void writeContentsToFile(Path filePath, String fileContents) throws IOException {
         Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
     }
+
+	public CommandExecutionListener getCommandListener() {
+		return commandListener;
+	}
 }
