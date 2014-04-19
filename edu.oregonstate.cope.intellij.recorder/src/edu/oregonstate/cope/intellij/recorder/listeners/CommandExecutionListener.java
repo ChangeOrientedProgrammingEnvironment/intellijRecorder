@@ -52,23 +52,27 @@ public class CommandExecutionListener implements AnActionListener {
     }
 
     private boolean isCopy(AnAction action) {
-        return false;
+        return action instanceof com.intellij.ide.actions.CopyAction
+                || action instanceof com.intellij.openapi.editor.actions.CopyAction;
     }
 
     private boolean isCut(AnAction action) {
-        return false;
+        return action instanceof com.intellij.ide.actions.CutAction
+                || action instanceof com.intellij.openapi.editor.actions.CutAction;
     }
 
     private boolean isPaste(AnAction action) {
-        return false;
+        return action instanceof com.intellij.ide.actions.PasteAction
+                || action instanceof com.intellij.openapi.editor.actions.PasteAction;
     }
 
     private boolean isUndo(AnAction action) {
-        return false;
+        return action instanceof com.intellij.ide.actions.PasteAction
+                || action instanceof com.intellij.openapi.editor.actions.PasteAction;
     }
 
     private boolean isRedo(AnAction action) {
-        return false;
+        return action instanceof com.intellij.ide.actions.RedoAction;
     }
 
     private void recordCopy() {
