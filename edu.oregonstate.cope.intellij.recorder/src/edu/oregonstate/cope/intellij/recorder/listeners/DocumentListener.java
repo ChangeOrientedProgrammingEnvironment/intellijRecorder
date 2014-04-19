@@ -1,4 +1,4 @@
-package edu.oregonstate.cope.intellij.recorder;
+package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.openapi.editor.event.DocumentEvent;
 import edu.oregonstate.cope.clientRecorder.ChangeOrigin;

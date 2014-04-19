@@ -1,7 +1,8 @@
-package edu.oregonstate.cope.intellij.recorder;
+package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.openapi.vfs.*;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 import org.apache.commons.codec.binary.Base64;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-class FileListener implements VirtualFileListener {
+public class FileListener implements VirtualFileListener {
     private COPEComponent copeComponent;
     private RecorderFacade recorderFacade;
 

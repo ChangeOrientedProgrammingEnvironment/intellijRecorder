@@ -1,10 +1,16 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.execution.BeforeRunTask;
+import com.intellij.execution.BeforeRunTaskProvider;
+import com.intellij.execution.RunManagerEx;
+import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
@@ -12,16 +18,22 @@ import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import edu.oregonstate.cope.fileSender.FileSender;
 import edu.oregonstate.cope.fileSender.FileSenderParams;
+import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
+import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
+import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
+import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
+import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
 import org.jetbrains.annotations.NotNull;
-import org.quartz.SchedulerException;
-import java.text.ParseException;
 import org.json.simple.JSONObject;
+import org.quartz.SchedulerException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * Created by caius on 3/3/14.
@@ -40,6 +52,10 @@ public class COPEComponent implements ProjectComponent {
     private Project project;
     private RecorderFacade recorder;
     private IntelliJStorageManager storageManager;
+    private Key<COPEBeforeRunTask> providerID;
+    private RunManagerEx runManager;
+    private BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider;
+
     private FileListener fileListener;
     private EditorFactoryListener editorFactoryListener;
 
@@ -55,6 +71,10 @@ public class COPEComponent implements ProjectComponent {
     public void disposeComponent() {
     }
 
+    public static COPEComponent getInstance(Project project) {
+        return project.getComponent(COPEComponent.class);
+    }
+
     @Override
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
@@ -62,8 +82,20 @@ public class COPEComponent implements ProjectComponent {
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
         EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
 
-        fileListener = new FileListener(this, recorder);
-        VirtualFileManager.getInstance().addVirtualFileListener(fileListener);
+        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
+        runManager = (RunManagerEx) RunManagerEx.getInstance(project);
+
+        runManager.addRunManagerListener(new COPERunManagerListener());
+
+        beforeRunTaskProvider = getBeforeRunTaskProvider();
+        if (beforeRunTaskProvider == null) {
+            System.out.println("Could not find provider");
+            return;
+        }
+        providerID = beforeRunTaskProvider.getId();
+        for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
+            addCOPETaskToRunConfiguration(runConfiguration);
+        }
 
         initFileSender();
 
@@ -86,6 +118,31 @@ public class COPEComponent implements ProjectComponent {
         }
     }
 
+    public void addCOPETaskToRunConfiguration(RunConfiguration runConfiguration) {
+        List<BeforeRunTask> beforeRunTasks = runManager.getBeforeRunTasks(runConfiguration);
+        if (!containsCOPEListener(beforeRunTasks)) {
+            beforeRunTasks.add(beforeRunTaskProvider.createTask(runConfiguration));
+            runManager.setBeforeRunTasks(runConfiguration, beforeRunTasks, true);
+        }
+    }
+
+    private boolean containsCOPEListener(List<BeforeRunTask> tasks) {
+        for (BeforeRunTask task : tasks)
+            if (providerID.equals(task.getProviderId()))
+                return true;
+        return false;
+    }
+
+    private BeforeRunTaskProvider<COPEBeforeRunTask> getBeforeRunTaskProvider() {
+        BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider = null;
+        BeforeRunTaskProvider<BeforeRunTask>[] extensions = Extensions.getExtensions(BeforeRunTaskProvider.EXTENSION_POINT_NAME, project);
+        for (BeforeRunTaskProvider<? extends BeforeRunTask> extension : extensions) {
+            String name = extension.getName();
+            if (name.equals(COPEBeforeRunTaskProvider.EXTENSION_NAME))
+                beforeRunTaskProvider = (BeforeRunTaskProvider<COPEBeforeRunTask>) extension;
+        }
+        return beforeRunTaskProvider;
+    }
 
 
     @Override
@@ -202,5 +259,4 @@ public class COPEComponent implements ProjectComponent {
     protected void writeContentsToFile(Path filePath, String fileContents) throws IOException {
         Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
     }
-
 }
