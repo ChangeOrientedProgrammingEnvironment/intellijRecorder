@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.ex.AnActionListener;
 //copy pasted from edu.oregonstate.cope.eclipse.listeners.CommandExecutionListener
 public class CommandExecutionListener implements AnActionListener {
 
-    private static boolean saveInProgress = false;
     private static boolean cutInProgress = false;
     private static boolean pasteInProgress = false;
     private static boolean undoInProgress = false;
@@ -28,14 +27,10 @@ public class CommandExecutionListener implements AnActionListener {
             undoInProgress = true;
         if (isRedo(anAction))
             redoInProgress = true;
-        if (isFileSave(anAction))
-            saveInProgress  = true;
     }
 
     @Override
     public void afterActionPerformed(AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent) {
-        if (isFileSave(anAction))
-            saveInProgress = false;
         if (isCut(anAction))
             cutInProgress = false;
         if (isPaste(anAction))
@@ -76,15 +71,6 @@ public class CommandExecutionListener implements AnActionListener {
     }
 
     private void recordCopy() {
-    }
-
-
-    private boolean isFileSave(AnAction action) {
-        return false;
-    }
-
-    public static boolean isSaveInProgress() {
-        return saveInProgress;
     }
 
     public static boolean isCutInProgress() {
