@@ -30,6 +30,10 @@ public class CommandExecutionListener implements AnActionListener {
 
     @Override
     public void beforeActionPerformed(AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent) {
+
+        if (!copeComponent.getProject().equals(anActionEvent.getProject()))
+            return;
+
 		if (isCopy(anAction)) {
             recordCopy(dataContext, anActionEvent);
         }

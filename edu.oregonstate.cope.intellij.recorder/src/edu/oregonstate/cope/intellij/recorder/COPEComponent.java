@@ -272,4 +272,8 @@ public class COPEComponent implements ProjectComponent {
 	public CommandExecutionListener getCommandListener() {
 		return commandListener;
 	}
+
+    public Project getProject() {
+        return project;
+    }
 }
