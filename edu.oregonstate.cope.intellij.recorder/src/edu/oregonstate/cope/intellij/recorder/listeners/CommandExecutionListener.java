@@ -80,8 +80,7 @@ public class CommandExecutionListener implements AnActionListener {
 
     private boolean isCopy(AnAction action) {
         return action instanceof com.intellij.ide.actions.CopyAction
-                || action instanceof com.intellij.openapi.editor.actions.CopyAction
-				|| action instanceof com.intellij.ide.actions.CopyReferenceAction;
+                || action instanceof com.intellij.openapi.editor.actions.CopyAction;
     }
 
     private boolean isCut(AnAction action) {
