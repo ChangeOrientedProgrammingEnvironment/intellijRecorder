@@ -31,6 +31,7 @@ public class DocumentListener implements com.intellij.openapi.editor.event.Docum
         CharSequence text = event.getNewFragment();
 
 		String changeOrigin = ChangeOrigin.USER;
+
 		if(commandListener.isCutInProgress())
 			changeOrigin = ChangeOrigin.CUT;
 		if(commandListener.isPasteInProgress())

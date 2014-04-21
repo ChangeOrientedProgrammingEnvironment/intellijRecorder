@@ -31,10 +31,10 @@ public class CommandExecutionListener implements AnActionListener {
     @Override
     public void beforeActionPerformed(AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent) {
 
-        if (!copeComponent.getProject().equals(anActionEvent.getProject()))
+        if (!eventNotFromMyProject(anActionEvent))
             return;
 
-		if (isCopy(anAction)) {
+        if (isCopy(anAction)) {
             recordCopy(dataContext, anActionEvent);
         }
         if (isCut(anAction))
@@ -45,6 +45,10 @@ public class CommandExecutionListener implements AnActionListener {
             undoInProgress = true;
         if (isRedo(anAction))
             redoInProgress = true;
+    }
+
+    private boolean eventNotFromMyProject(AnActionEvent anActionEvent) {
+        return copeComponent.getProject().equals(anActionEvent.getProject());
     }
 
     private void recordCopy(DataContext dataContext, AnActionEvent anActionEvent) {
@@ -99,8 +103,8 @@ public class CommandExecutionListener implements AnActionListener {
     private boolean isPaste(AnAction action) {
         return action instanceof com.intellij.ide.actions.PasteAction
                 || action instanceof com.intellij.openapi.editor.actions.PasteAction
-				|| action instanceof com.intellij.openapi.editor.actions.SimplePasteAction
-				|| action instanceof com.intellij.openapi.editor.actions.MultiplePasteAction;
+                || action instanceof com.intellij.openapi.editor.actions.SimplePasteAction
+                || action instanceof com.intellij.openapi.editor.actions.MultiplePasteAction;
     }
 
     private boolean isUndo(AnAction action) {
