@@ -1,5 +1,6 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
@@ -10,27 +11,52 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 /**
  * Created by michaelhilton on 3/25/14.
  */
 public class COPEStatus implements StatusBarWidget, StatusBarWidget.IconPresentation {
+
+    private final Boolean updateReady;
+
+    public COPEStatus(Boolean updateReady) {
+        this.updateReady = updateReady;
+    }
+
     @NotNull
     @Override
     public Icon getIcon() {
-        Icon test = IconLoader.getIcon("cope20.png");
-        return test;
+        if(updateReady){
+            Icon test = IconLoader.getIcon("copeLogo_UpdateReady.png");
+            return test;
+        }else{
+            Icon test = IconLoader.getIcon("copeLogo.png");
+            return test;
+        }
+
     }
 
     @Nullable
     @Override
     public String getTooltipText() {
-        return "COPE!!";
+        return "COPE Recorder plugin active";
     }
 
     @Nullable
     @Override
     public Consumer<MouseEvent> getClickConsumer() {
-        return null;
+        if(updateReady) {
+            return new Consumer<MouseEvent>() {
+                public void consume(MouseEvent mouseEvent) {
+                    // update();
+                    Messages.showMessageDialog("Your version of COPE is out of date.  Please update your plugin!", "COPE", Messages.getInformationIcon());
+
+                }
+            };
+        }else{
+            return null;
+        }
     }
 
     @NotNull
@@ -50,6 +76,7 @@ public class COPEStatus implements StatusBarWidget, StatusBarWidget.IconPresenta
     public void install(@NotNull StatusBar statusBar) {
 
     }
+
 
     @Override
     public void dispose() {
