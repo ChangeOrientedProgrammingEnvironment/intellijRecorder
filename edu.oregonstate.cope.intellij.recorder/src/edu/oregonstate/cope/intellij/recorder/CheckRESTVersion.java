@@ -31,7 +31,6 @@ public class CheckRESTVersion {
         this.copeComponent = copeComponent;
     }
 
-    //http://localhost:8080/RESTfulExample/json/product/get
     public boolean isThereNewCOPEVersion() {
         try {
             String updateURL = copeComponent.getRecorder().getInstallationProperties().getProperty("updateURL");
@@ -41,43 +40,36 @@ public class CheckRESTVersion {
             conn.setRequestProperty("Accept", "application/json");
 
             if (conn.getResponseCode() != 200) {
-//                throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
+            }else {
 
-            }
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        (conn.getInputStream())));
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    (conn.getInputStream())));
-
-            String xmlString = "";
-            String parseString;
-            //System.out.println("Output from Server .... \n");
-            while ((parseString = br.readLine()) != null) {
-                //System.out.println(parseString);
-                xmlString = xmlString.concat(parseString);
-            }
-
-            ByteArrayInputStream stream = new ByteArrayInputStream(xmlString.getBytes());
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = builder.parse(stream);
-            doc.getDocumentElement().normalize();
-
-            //System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
-            NodeList nodes = doc.getElementsByTagName("plugin");
-            //System.out.println("==========================");
-            //System.out.println(nodes.getLength());
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node n = nodes.item(i);
-                //System.out.println(n.getAttributes().getNamedItem("id"));
-                if (n.getAttributes().getNamedItem("id").getNodeValue().equals("COPERecorder")) {
-                    String installedVersion = ((COPEComponent) this.project.getComponent(COPEComponent.class)).getPluginVersion();
-                    String updateVersion = n.getAttributes().getNamedItem("version").getNodeValue();
-                    if (!installedVersion.equals(updateVersion)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                String xmlString = "";
+                String parseString;
+                while ((parseString = br.readLine()) != null) {
+                    xmlString = xmlString.concat(parseString);
                 }
 
+                ByteArrayInputStream stream = new ByteArrayInputStream(xmlString.getBytes());
+                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document doc = builder.parse(stream);
+                doc.getDocumentElement().normalize();
+
+                NodeList nodes = doc.getElementsByTagName("plugin");
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Node n = nodes.item(i);
+                    if (n.getAttributes().getNamedItem("id").getNodeValue().equals("COPERecorder")) {
+                        String installedVersion = ((COPEComponent) this.project.getComponent(COPEComponent.class)).getPluginVersion();
+                        String updateVersion = n.getAttributes().getNamedItem("version").getNodeValue();
+                        if (!installedVersion.equals(updateVersion)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+
+                }
             }
             conn.disconnect();
 
