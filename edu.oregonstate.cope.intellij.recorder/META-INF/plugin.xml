@@ -30,7 +30,7 @@
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <testStatusListener implementation="edu.oregonstate.cope.intellij.recorder.TestListener">  </testStatusListener>
+    <testStatusListener implementation="edu.oregonstate.cope.intellij.recorder.listeners.TestListener">  </testStatusListener>
   </extensions>
 
     <application-components>
