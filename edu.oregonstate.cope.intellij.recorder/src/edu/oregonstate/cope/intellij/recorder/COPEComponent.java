@@ -4,6 +4,7 @@ import com.intellij.execution.BeforeRunTask;
 import com.intellij.execution.BeforeRunTaskProvider;
 import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
@@ -23,12 +24,14 @@ import edu.oregonstate.cope.fileSender.FileSenderParams;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
+import edu.oregonstate.cope.intellij.recorder.listeners.CommandExecutionListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.quartz.SchedulerException;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -61,6 +64,8 @@ public class COPEComponent implements ProjectComponent {
     private FileListener fileListener;
     private EditorFactoryListener editorFactoryListener;
 
+    private CommandExecutionListener commandListener;
+
     public COPEComponent(Project project) {
         this.project = project;
     }
@@ -85,10 +90,14 @@ public class COPEComponent implements ProjectComponent {
         if (recorder.isFirstStart())
             initWorkspace();
 
+        commandListener = new CommandExecutionListener(this);
+        ActionManager.getInstance().addAnActionListener(commandListener);
+
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
         EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
 
-        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
+        fileListener = new FileListener(this, recorder);
+        VirtualFileManager.getInstance().addVirtualFileListener(fileListener);
         runManager = (RunManagerEx) RunManagerEx.getInstance(project);
 
         runManager.addRunManagerListener(new COPERunManagerListener());
@@ -166,6 +175,8 @@ public class COPEComponent implements ProjectComponent {
     public void projectClosed() {
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
+        ActionManager.getInstance().removeAnActionListener(commandListener);
+
         takeSnapshotOfProject(project);
     }
 
@@ -282,9 +293,16 @@ public class COPEComponent implements ProjectComponent {
         Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
     }
 
+	public CommandExecutionListener getCommandListener() {
+		return commandListener;
+	}
+
+    public Project getProject() {
+        return project;
+    }
+
     public String getPluginVersion() {
         return PluginManager.getPlugin(PluginId.getId(COPEComponent.ID)).getVersion();
     }
-
 
 }

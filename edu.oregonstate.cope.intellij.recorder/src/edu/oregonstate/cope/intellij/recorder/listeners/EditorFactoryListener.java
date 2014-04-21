@@ -32,7 +32,7 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
         }
 
         Document document = event.getEditor().getDocument();
-        document.addDocumentListener(new DocumentListener(filePath, recorder));
+        document.addDocumentListener(new DocumentListener(filePath, copeComponent.getCommandListener(), recorder));
 
         recorder.recordFileOpen(filePath);
     }
