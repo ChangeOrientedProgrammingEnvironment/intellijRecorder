@@ -24,12 +24,13 @@
   <depends>com.intellij.modules.lang</depends>
   -->
 
-  <extensions defaultExtensionNs="edu.oregonstate.cope.eclipse.intellij">
+  <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
-  </extensions>
+     <applicationConfigurable implementation="edu.oregonstate.cope.intellij.recorder.COPEConfigManager"></applicationConfigurable>
+ </extensions>
 
-  <application-components>
-    <!-- Add your application components here -->
+ <application-components>
+   <!-- Add your application components here -->
   </application-components>
 
   <project-components>
