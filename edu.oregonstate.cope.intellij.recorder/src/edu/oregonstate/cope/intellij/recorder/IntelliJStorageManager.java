@@ -59,6 +59,6 @@ public class IntelliJStorageManager implements StorageManager {
     }
 
     private File getVersionedStorage(File file) {
-        return new File(file, getPluginDescriptor().getVersion());
+        return new File(file, ((COPEComponent)project.getComponent(COPEComponent.class)).getPluginVersion());
     }
 }

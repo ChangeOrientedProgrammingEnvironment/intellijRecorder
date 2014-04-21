@@ -4,9 +4,11 @@ import com.intellij.execution.BeforeRunTask;
 import com.intellij.execution.BeforeRunTaskProvider;
 import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.extensions.Extensions;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -107,9 +109,17 @@ public class COPEComponent implements ProjectComponent {
         permanentDirectory = storageManager.getBundleStorage().getAbsoluteFile().toPath();
 
 
+        //Check if there is a stored updateURL, and if not add it.
+        if(recorder.getInstallationProperties().getProperty("updateURL").isEmpty()){
+            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+        }
+
+        CheckRESTVersion crv = new CheckRESTVersion(this,project);
+        Boolean updateReady = crv.isThereNewCOPEVersion();
+
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         if (statusBar != null) {
-            status = new COPEStatus();
+            status = new COPEStatus(updateReady);
             statusBar.addWidget(status);
         }
 
@@ -268,4 +278,10 @@ public class COPEComponent implements ProjectComponent {
     protected void writeContentsToFile(Path filePath, String fileContents) throws IOException {
         Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
     }
+
+    public String getPluginVersion() {
+        return PluginManager.getPlugin(PluginId.getId(COPEComponent.ID)).getVersion();
+    }
+
+
 }

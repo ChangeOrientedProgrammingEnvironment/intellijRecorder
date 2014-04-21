@@ -27,10 +27,8 @@
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
       <stepsBeforeRunProvider implementation="edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider"></stepsBeforeRunProvider>
-  </extensions>
-
-  <extensions defaultExtensionNs="com.intellij">
-    <testStatusListener implementation="edu.oregonstate.cope.intellij.recorder.listeners.TestListener">  </testStatusListener>
+      <testStatusListener implementation="edu.oregonstate.cope.intellij.recorder.listeners.TestListener">  </testStatusListener>
+       <applicationConfigurable implementation="edu.oregonstate.cope.intellij.recorder.COPEConfigManager"></applicationConfigurable>
   </extensions>
 
     <application-components>
