@@ -85,7 +85,7 @@ public class COPEComponent implements ProjectComponent {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
 
-        commandListener = new CommandExecutionListener();
+        commandListener = new CommandExecutionListener(this);
         ActionManager.getInstance().addAnActionListener(commandListener);
 
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());

@@ -22,6 +22,11 @@ public class CommandExecutionListener implements AnActionListener {
     private static boolean pasteInProgress = false;
     private static boolean undoInProgress = false;
     private static boolean redoInProgress = false;
+    private final COPEComponent copeComponent;
+
+    public CommandExecutionListener(COPEComponent copeComponent) {
+        this.copeComponent = copeComponent;
+    }
 
     @Override
     public void beforeActionPerformed(AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent) {
@@ -52,8 +57,7 @@ public class CommandExecutionListener implements AnActionListener {
 
         String path = getPath(editor);
 
-        COPEComponent component = anActionEvent.getProject().getComponent(COPEComponent.class);
-        component.getRecorder().getClientRecorder().recordCopy(path, selection.getSelectionStart(), selectedText.length(), selectedText);
+        copeComponent.getRecorder().getClientRecorder().recordCopy(path, selection.getSelectionStart(), selectedText.length(), selectedText);
     }
 
     private String getPath(Editor editor) {
