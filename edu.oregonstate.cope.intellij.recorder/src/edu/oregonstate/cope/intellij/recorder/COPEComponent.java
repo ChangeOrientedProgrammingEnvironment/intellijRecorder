@@ -4,6 +4,7 @@ import com.intellij.execution.BeforeRunTask;
 import com.intellij.execution.BeforeRunTaskProvider;
 import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.extensions.Extensions;
@@ -21,12 +22,14 @@ import edu.oregonstate.cope.fileSender.FileSenderParams;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
+import edu.oregonstate.cope.intellij.recorder.listeners.CommandExecutionListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.quartz.SchedulerException;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,6 +62,8 @@ public class COPEComponent implements ProjectComponent {
     private FileListener fileListener;
     private EditorFactoryListener editorFactoryListener;
 
+    private CommandExecutionListener commandListener;
+
     public COPEComponent(Project project) {
         this.project = project;
     }
@@ -79,10 +84,18 @@ public class COPEComponent implements ProjectComponent {
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
+
+        if (recorder.isFirstStart())
+            initWorkspace();
+
+        commandListener = new CommandExecutionListener(this);
+        ActionManager.getInstance().addAnActionListener(commandListener);
+
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
         EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
 
-        VirtualFileManager.getInstance().addVirtualFileListener(new FileListener(this, recorder));
+        fileListener = new FileListener(this, recorder);
+        VirtualFileManager.getInstance().addVirtualFileListener(fileListener);
         runManager = (RunManagerEx) RunManagerEx.getInstance(project);
 
         runManager.addRunManagerListener(new COPERunManagerListener());
@@ -149,6 +162,9 @@ public class COPEComponent implements ProjectComponent {
     public void projectClosed() {
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
+        ActionManager.getInstance().removeAnActionListener(commandListener);
+
+        takeSnapshotOfProject(project);
     }
 
     @NotNull
@@ -192,18 +208,22 @@ public class COPEComponent implements ProjectComponent {
         File permanentFile = permanentDirectory.resolve(fileName).toFile();
 
         if (workspaceFile.exists() && permanentFile.exists()) {
-            // System.out.println(this.getClass() + " both files exist");
             //DO NOTHING
         } else if (!workspaceFile.exists() && permanentFile.exists()) {
-            // System.out.println(this.getClass() + " only permanent");
             doOnlyPermanentFileExists(workspaceFile, permanentFile);
         } else if (workspaceFile.exists() && !permanentFile.exists()) {
-            // System.out.println(this.getClass() + " only workspace");
             doOnlyWorkspaceFileExists(workspaceFile, permanentFile);
         } else if (!workspaceFile.exists() && !permanentFile.exists()) {
-            // System.out.println(this.getClass() + " neither files exist");
             doNoFileExists(workspaceFile, permanentFile);
         }
+    }
+
+    private void initWorkspace() {
+        takeSnapshotOfProject(project);
+    }
+
+    private void takeSnapshotOfProject(Project project) {
+        new EclipseExporter(project, storageManager.getLocalStorage(), recorder).export();
     }
 
     protected void doOnlyWorkspaceFileExists(File workspaceFile, File permanentFile) throws IOException {
@@ -258,5 +278,13 @@ public class COPEComponent implements ProjectComponent {
 
     protected void writeContentsToFile(Path filePath, String fileContents) throws IOException {
         Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
+    }
+
+	public CommandExecutionListener getCommandListener() {
+		return commandListener;
+	}
+
+    public Project getProject() {
+        return project;
     }
 }
