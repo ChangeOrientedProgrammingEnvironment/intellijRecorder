@@ -26,11 +26,16 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
+      <stepsBeforeRunProvider implementation="edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider"></stepsBeforeRunProvider>
+ 
+    <testStatusListener implementation="edu.oregonstate.cope.intellij.recorder.listeners.TestListener">  </testStatusListener>
      <applicationConfigurable implementation="edu.oregonstate.cope.intellij.recorder.COPEConfigManager"></applicationConfigurable>
- </extensions>
 
- <application-components>
-   <!-- Add your application components here -->
+
+  </extensions>
+
+    <application-components>
+    <!-- Add your application components here -->
   </application-components>
 
   <project-components>
@@ -43,5 +48,8 @@
   <actions>
     <!-- Add your actions here -->
   </actions>
+
+  <depends>org.jetbrains.idea.eclipse</depends>
+  <depends>JUnit</depends>
 
 </idea-plugin>
