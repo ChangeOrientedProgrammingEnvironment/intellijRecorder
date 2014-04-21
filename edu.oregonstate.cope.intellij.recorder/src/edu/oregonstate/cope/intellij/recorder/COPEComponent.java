@@ -85,6 +85,9 @@ public class COPEComponent implements ProjectComponent {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
 
+        if (recorder.isFirstStart())
+            initWorkspace();
+
         commandListener = new CommandExecutionListener(this);
         ActionManager.getInstance().addAnActionListener(commandListener);
 
@@ -160,6 +163,8 @@ public class COPEComponent implements ProjectComponent {
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
         ActionManager.getInstance().removeAnActionListener(commandListener);
+
+        takeSnapshotOfProject(project);
     }
 
     @NotNull
@@ -203,18 +208,22 @@ public class COPEComponent implements ProjectComponent {
         File permanentFile = permanentDirectory.resolve(fileName).toFile();
 
         if (workspaceFile.exists() && permanentFile.exists()) {
-            // System.out.println(this.getClass() + " both files exist");
             //DO NOTHING
         } else if (!workspaceFile.exists() && permanentFile.exists()) {
-            // System.out.println(this.getClass() + " only permanent");
             doOnlyPermanentFileExists(workspaceFile, permanentFile);
         } else if (workspaceFile.exists() && !permanentFile.exists()) {
-            // System.out.println(this.getClass() + " only workspace");
             doOnlyWorkspaceFileExists(workspaceFile, permanentFile);
         } else if (!workspaceFile.exists() && !permanentFile.exists()) {
-            // System.out.println(this.getClass() + " neither files exist");
             doNoFileExists(workspaceFile, permanentFile);
         }
+    }
+
+    private void initWorkspace() {
+        takeSnapshotOfProject(project);
+    }
+
+    private void takeSnapshotOfProject(Project project) {
+        new EclipseExporter(project, storageManager.getLocalStorage(), recorder).export();
     }
 
     protected void doOnlyWorkspaceFileExists(File workspaceFile, File permanentFile) throws IOException {
