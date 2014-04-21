@@ -158,6 +158,7 @@ public class COPEComponent implements ProjectComponent {
     public void projectClosed() {
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
+        ActionManager.getInstance().removeAnActionListener(commandListener);
     }
 
     @NotNull
