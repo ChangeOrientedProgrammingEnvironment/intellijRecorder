@@ -66,7 +66,7 @@ public class CommandExecutionListener implements AnActionListener {
 
     private String getPath(Editor editor) {
         VirtualFile file = FileDocumentManager.getInstance().getFile(editor.getDocument());
-        return file.getPath();
+        return file.getCanonicalPath();
     }
 
     @Override
