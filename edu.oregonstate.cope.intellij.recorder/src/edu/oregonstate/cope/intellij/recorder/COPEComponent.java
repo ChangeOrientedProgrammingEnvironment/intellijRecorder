@@ -203,4 +203,9 @@ public class COPEComponent implements ProjectComponent {
         Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
     }
 
+    public String getPluginVersion() {
+        return PluginManager.getPlugin(PluginId.getId(COPEComponent.ID)).getVersion();
+    }
+
+
 }
