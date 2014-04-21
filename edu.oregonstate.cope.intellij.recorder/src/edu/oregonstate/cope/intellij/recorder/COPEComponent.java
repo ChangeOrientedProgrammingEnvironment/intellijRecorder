@@ -110,8 +110,11 @@ public class COPEComponent implements ProjectComponent {
 
 
         //Check if there is a stored updateURL, and if not add it.
-        if(recorder.getInstallationProperties().getProperty("updateURL").isEmpty()){
-            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+        String updateURL = recorder.getInstallationProperties().getProperty("updateURL");
+        if(!(updateURL == null)) {
+            if(updateURL.isEmpty()){
+                recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+            }
         }
 
         CheckRESTVersion crv = new CheckRESTVersion(this,project);
