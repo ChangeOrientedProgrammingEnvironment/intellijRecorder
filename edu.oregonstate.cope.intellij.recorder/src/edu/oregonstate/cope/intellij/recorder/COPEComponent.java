@@ -1,7 +1,9 @@
 package edu.oregonstate.cope.intellij.recorder;
 
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -71,9 +73,17 @@ public class COPEComponent implements ProjectComponent {
         permanentDirectory = storageManager.getBundleStorage().getAbsoluteFile().toPath();
 
 
+        //Check if there is a stored updateURL, and if not add it.
+        if(recorder.getInstallationProperties().getProperty("updateURL").isEmpty()){
+            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+        }
+
+        CheckRESTVersion crv = new CheckRESTVersion(this,project);
+        Boolean updateReady = crv.isThereNewCOPEVersion();
+
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         if (statusBar != null) {
-            status = new COPEStatus();
+            status = new COPEStatus(updateReady);
             statusBar.addWidget(status);
         }
 
