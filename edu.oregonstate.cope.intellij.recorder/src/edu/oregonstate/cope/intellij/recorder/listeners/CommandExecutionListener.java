@@ -2,8 +2,18 @@ package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.ex.AnActionListener;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.SelectionModel;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
+import sun.plugin.dom.core.CoreConstants;
 
 //copy pasted from edu.oregonstate.cope.eclipse.listeners.CommandExecutionListener
 public class CommandExecutionListener implements AnActionListener {
@@ -16,7 +26,7 @@ public class CommandExecutionListener implements AnActionListener {
     @Override
     public void beforeActionPerformed(AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent) {
 		if (isCopy(anAction)) {
-            recordCopy();
+            recordCopy(dataContext, anActionEvent);
         }
         if (isCut(anAction))
             cutInProgress = true;
@@ -26,6 +36,29 @@ public class CommandExecutionListener implements AnActionListener {
             undoInProgress = true;
         if (isRedo(anAction))
             redoInProgress = true;
+    }
+
+    private void recordCopy(DataContext dataContext, AnActionEvent anActionEvent) {
+        Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
+
+        if (editor == null)
+            return;
+
+        SelectionModel selection = editor.getSelectionModel();
+        String selectedText = selection.getSelectedText();
+
+        if (selectedText == null)
+            return;
+
+        String path = getPath(editor);
+
+        COPEComponent component = anActionEvent.getProject().getComponent(COPEComponent.class);
+        component.getRecorder().getClientRecorder().recordCopy(path, selection.getSelectionStart(), selectedText.length(), selectedText);
+    }
+
+    private String getPath(Editor editor) {
+        VirtualFile file = FileDocumentManager.getInstance().getFile(editor.getDocument());
+        return file.getPath();
     }
 
     @Override
@@ -69,9 +102,6 @@ public class CommandExecutionListener implements AnActionListener {
 
     private boolean isRedo(AnAction action) {
         return action instanceof com.intellij.ide.actions.RedoAction;
-    }
-
-    private void recordCopy() {
     }
 
     public static boolean isCutInProgress() {
