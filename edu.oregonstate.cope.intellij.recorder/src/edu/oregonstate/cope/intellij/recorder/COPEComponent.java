@@ -115,6 +115,8 @@ public class COPEComponent implements ProjectComponent {
             if(updateURL.isEmpty()){
                 recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
             }
+        }else{
+            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
         }
 
         CheckRESTVersion crv = new CheckRESTVersion(this,project);
