@@ -127,9 +127,11 @@ public class COPEConfigManager implements Configurable {
         try {
             saveFTPProperties();
         } catch (UnknownHostException e) {
-            showMessageDialog(null, "Unable to connect to host");
+            //showMessageDialog(null, "Unable to connect to host");
+            throw new ConfigurationException("Unable to connect to host");
         } catch (JSchException e) {
-            showMessageDialog(null, "Unable to establish connection using specified credentials");
+            //showMessageDialog(null, "Unable to establish connection using specified credentials");
+            throw new ConfigurationException("Unable to establish connection using specified credentials");
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
