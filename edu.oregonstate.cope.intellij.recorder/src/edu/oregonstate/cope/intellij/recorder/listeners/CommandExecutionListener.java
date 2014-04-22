@@ -13,7 +13,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import edu.oregonstate.cope.intellij.recorder.COPEComponent;
-import sun.plugin.dom.core.CoreConstants;
 
 //copy pasted from edu.oregonstate.cope.eclipse.listeners.CommandExecutionListener
 public class CommandExecutionListener implements AnActionListener {
