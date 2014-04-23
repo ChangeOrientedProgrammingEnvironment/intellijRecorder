@@ -67,7 +67,8 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
         recorder.recordFileClose(filePath);
 
         Document document = documentMap.get(filePath);
-        System.out.println(filePath);
+        if (document == null)
+            return;
         DocumentListener documentListener = listenerMap.get(document);
         document.removeDocumentListener(documentListener);
     }
