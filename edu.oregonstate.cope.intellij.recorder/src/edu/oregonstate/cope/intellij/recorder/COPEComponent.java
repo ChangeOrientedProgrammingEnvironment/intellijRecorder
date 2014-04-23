@@ -53,6 +53,11 @@ public class COPEComponent implements ProjectComponent {
     private static final String SURVEY_FILENAME = "survey.txt";
     public final static String EMAIL_FILENAME = "email.txt";
 
+    public final static String PREFERENCES_HOSTNAME = "hostname";
+    public final static String PREFERENCES_PORT = "port";
+    public final static String PREFERENCES_USERNAME = "username";
+    public final static String PREFERENCES_PASSWORD = "password";
+
     private final String IDE = "IDEA";
     private Project project;
     private RecorderFacade recorder;

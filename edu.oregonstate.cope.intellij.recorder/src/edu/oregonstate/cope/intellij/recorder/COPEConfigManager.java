@@ -9,29 +9,40 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.jcraft.jsch.JSchException;
+import edu.oregonstate.cope.clientRecorder.Properties;
+import edu.oregonstate.cope.fileSender.FTPConnectionProperties;
+import edu.oregonstate.cope.fileSender.SFTPUploader;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
+import java.security.GeneralSecurityException;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * Created by michaelhilton on 4/15/14.
  */
 public class COPEConfigManager implements Configurable {
-    private JTextField textField1;
-    private JPasswordField passwordField1;
+    private JTextField hostnameField;
+    private JPasswordField passwordField;
     private JPanel myPanel;
-    private JTextField textField2;
+    private JTextField usernameField;
     private JTextField updateSiteField;
     private JTextArea ConnectionStatus;
+    private JTextField portField;
     private JComponent myComponent;
     private COPEComponent copeComponent;
     private String updateURL;
+
+    private String hostname;
+    private int port;
+    private String username;
+    private String password;
 
     @Nls
     @Override
@@ -62,6 +73,32 @@ public class COPEConfigManager implements Configurable {
 
         updateSiteField.setText(updateURL);
 
+        Properties workspaceProperties = copeComponent.getRecorder().getWorkspaceProperties();
+        FTPConnectionProperties ftpProperties = new FTPConnectionProperties();
+        String preferencesHostname = workspaceProperties.getProperty(COPEComponent.PREFERENCES_HOSTNAME);
+        String preferencesPort = workspaceProperties.getProperty(COPEComponent.PREFERENCES_PORT);
+        String preferencesUsername = workspaceProperties.getProperty(COPEComponent.PREFERENCES_USERNAME);
+        String preferencesPassword = workspaceProperties.getProperty(COPEComponent.PREFERENCES_PASSWORD);
+        if(preferencesHostname != null && !preferencesHostname.isEmpty()
+                && preferencesPort != null && !preferencesPort.isEmpty()
+                && preferencesUsername != null && !preferencesUsername.isEmpty()
+                && preferencesPassword != null && !preferencesPassword.isEmpty()
+                ) {
+            hostnameField.setText(preferencesHostname);
+            portField.setText(preferencesPort);
+            usernameField.setText(preferencesUsername);
+            try {
+                    passwordField.setText(ftpProperties.decrypt(preferencesPassword));
+                } catch (GeneralSecurityException | IOException e1) {
+                    e1.printStackTrace();
+                }
+        } else {
+            hostnameField.setText(ftpProperties.getHost());
+            portField.setText(Integer.toString(ftpProperties.getPort()));
+            usernameField.setText(ftpProperties.getUsername());
+            passwordField.setText(ftpProperties.getPassword());
+        }
+
         //myComponent.disable();
         myComponent = (JComponent) myPanel;
         return myComponent;
@@ -87,6 +124,32 @@ public class COPEConfigManager implements Configurable {
         if (!updateURL.isEmpty()) {
             copeComponent.getRecorder().getInstallationProperties().addProperty("updateURL", newURL);
         }
+        try {
+            saveFTPProperties();
+        } catch (UnknownHostException e) {
+            //showMessageDialog(null, "Unable to connect to host");
+            throw new ConfigurationException("Unable to connect to host");
+        } catch (JSchException e) {
+            //showMessageDialog(null, "Unable to establish connection using specified credentials");
+            throw new ConfigurationException("Unable to establish connection using specified credentials");
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveFTPProperties() throws UnknownHostException, JSchException, GeneralSecurityException, UnsupportedEncodingException {
+        hostname = hostnameField.getText();
+        port = Integer.parseInt(portField.getText());
+        username = usernameField.getText();
+        password = passwordField.getText();
+        new SFTPUploader(hostname, port, username, password);
+        copeComponent.getRecorder().getWorkspaceProperties().addProperty("hostname", hostname);
+        copeComponent.getRecorder().getWorkspaceProperties().addProperty("port", Integer.toString(port));
+        copeComponent.getRecorder().getWorkspaceProperties().addProperty("username", username);
+        FTPConnectionProperties ftpConnectionProperties = new FTPConnectionProperties();
+        copeComponent.getRecorder().getWorkspaceProperties().addProperty("password", ftpConnectionProperties.encrypt(password));
     }
 
     @Override
