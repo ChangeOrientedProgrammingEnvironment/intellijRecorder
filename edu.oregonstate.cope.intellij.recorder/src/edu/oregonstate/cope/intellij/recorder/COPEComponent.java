@@ -28,15 +28,8 @@ import edu.oregonstate.cope.intellij.recorder.listeners.CommandExecutionListener
 import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
 import org.quartz.SchedulerException;
 
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
 import java.util.List;
 
@@ -99,6 +92,7 @@ public class COPEComponent implements ProjectComponent {
 
         fileListener = new FileListener(this, recorder);
         VirtualFileManager.getInstance().addVirtualFileListener(fileListener);
+
         runManager = (RunManagerEx) RunManagerEx.getInstance(project);
 
         runManager.addRunManagerListener(new COPERunManagerListener());
@@ -115,16 +109,12 @@ public class COPEComponent implements ProjectComponent {
 
         initFileSender();
 
-        //Check if there is a stored updateURL, and if not add it.
-        String updateURL = recorder.getInstallationProperties().getProperty("updateURL");
-        if(!(updateURL == null)) {
-            if(updateURL.isEmpty()){
-                recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
-            }
-        }else{
-            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
-        }
+        addUpdateURLIfAbsent();
 
+        doStatusBarIcon();
+    }
+
+    private void doStatusBarIcon() {
         CheckRESTVersion crv = new CheckRESTVersion(this,project);
         Boolean updateReady = crv.isThereNewCOPEVersion();
 
@@ -132,6 +122,17 @@ public class COPEComponent implements ProjectComponent {
         if (statusBar != null) {
             status = new COPEStatus(updateReady);
             statusBar.addWidget(status);
+        }
+    }
+
+    private void addUpdateURLIfAbsent() {
+        String updateURL = recorder.getInstallationProperties().getProperty("updateURL");
+        if(!(updateURL == null)) {
+            if(updateURL.isEmpty()){
+                recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+            }
+        }else{
+            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
         }
     }
 
