@@ -50,7 +50,7 @@ public class CommandExecutionListener implements AnActionListener {
     private void recordCopy(DataContext dataContext, AnActionEvent anActionEvent) {
         Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
 
-        if (editor == null)
+        if (editor == null || getFile(editor) == null)
             return;
 
         SelectionModel selection = editor.getSelectionModel();
