@@ -21,6 +21,8 @@ import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import edu.oregonstate.cope.fileSender.FileSender;
 import edu.oregonstate.cope.fileSender.FileSenderParams;
+import edu.oregonstate.cope.intellij.recorder.installation.IJInstaller;
+import edu.oregonstate.cope.intellij.recorder.installation.IJInstallerHelper;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
@@ -84,15 +86,37 @@ public class COPEComponent implements ProjectComponent {
         if (recorder.isFirstStart())
             initWorkspace();
 
+        registerCommandListener();
+
+        registerEditorListener();
+
+        registerFileListener();
+
+        registerLaunchListener();
+
+        initFileSender();
+
+        addUpdateURLIfAbsent();
+
+        doStatusBarIcon();
+    }
+
+    private void registerCommandListener() {
         commandListener = new CommandExecutionListener(this);
         ActionManager.getInstance().addAnActionListener(commandListener);
+    }
 
+    private void registerEditorListener() {
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
         EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
+    }
 
+    private void registerFileListener() {
         fileListener = new FileListener(this, recorder);
         VirtualFileManager.getInstance().addVirtualFileListener(fileListener);
+    }
 
+    private void registerLaunchListener() {
         runManager = (RunManagerEx) RunManagerEx.getInstance(project);
 
         runManager.addRunManagerListener(new COPERunManagerListener());
@@ -105,12 +129,6 @@ public class COPEComponent implements ProjectComponent {
                 addCOPETaskToRunConfiguration(runConfiguration);
             }
         }
-
-        initFileSender();
-
-        addUpdateURLIfAbsent();
-
-        doStatusBarIcon();
     }
 
     private void doStatusBarIcon() {
