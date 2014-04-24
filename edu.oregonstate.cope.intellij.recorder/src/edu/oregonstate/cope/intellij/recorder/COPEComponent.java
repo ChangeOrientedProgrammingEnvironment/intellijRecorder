@@ -13,14 +13,18 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.clientRecorder.Uninstaller;
 import edu.oregonstate.cope.fileSender.FileSender;
 import edu.oregonstate.cope.fileSender.FileSenderParams;
+import edu.oregonstate.cope.intellij.recorder.installation.IJInstaller;
+import edu.oregonstate.cope.intellij.recorder.installation.IJInstallerHelper;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
@@ -28,15 +32,9 @@ import edu.oregonstate.cope.intellij.recorder.listeners.CommandExecutionListener
 import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
 import org.quartz.SchedulerException;
 
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
 import java.util.List;
 
@@ -48,10 +46,6 @@ public class COPEComponent implements ProjectComponent {
     public static final String ID = "edu.oregonstate.cope.intellij.recorder";
 
     COPEStatus status;
-    protected Path workspaceDirectory;
-    protected Path permanentDirectory;
-    private static final String SURVEY_FILENAME = "survey.txt";
-    public final static String EMAIL_FILENAME = "email.txt";
 
     public final static String PREFERENCES_HOSTNAME = "hostname";
     public final static String PREFERENCES_PORT = "port";
@@ -92,47 +86,90 @@ public class COPEComponent implements ProjectComponent {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
 
-        if (recorder.isFirstStart())
-            initWorkspace();
+        Uninstaller uninstaller = recorder.getUninstaller();
 
+        if (uninstaller.isUninstalled())
+            return;
+
+        if (uninstaller.shouldUninstall())
+            performUninstall(uninstaller);
+        else
+            performStartup();
+    }
+
+    private void performUninstall(Uninstaller uninstaller) {
+        uninstaller.setUninstall();
+
+        String title = "COPE recorder shutting down";
+        String message = "The time allotted for the study has expired. "
+                + "The recorder plugin has shut down permanently and you may delete it if you wish to do so. "
+                + "\n\nThank you for your participation!";
+
+        Messages.showInfoMessage(project, message, title);
+
+    }
+
+    private void performStartup() {
+        if (recorder.isFirstStart()) {
+            initWorkspace();
+        }
+
+        runInstaller();
+
+        registerCommandListener();
+
+        registerEditorListener();
+
+        registerFileListener();
+
+        registerLaunchListener();
+
+        initFileSender();
+
+        addUpdateURLIfAbsent();
+
+        doStatusBarIcon();
+    }
+
+    private void runInstaller() {
+        try {
+            new IJInstaller(recorder, new IJInstallerHelper(this)).run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerCommandListener() {
         commandListener = new CommandExecutionListener(this);
         ActionManager.getInstance().addAnActionListener(commandListener);
+    }
 
+    private void registerEditorListener() {
         editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
         EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
+    }
 
+    private void registerFileListener() {
         fileListener = new FileListener(this, recorder);
         VirtualFileManager.getInstance().addVirtualFileListener(fileListener);
+    }
+
+    private void registerLaunchListener() {
         runManager = (RunManagerEx) RunManagerEx.getInstance(project);
 
         runManager.addRunManagerListener(new COPERunManagerListener());
 
         beforeRunTaskProvider = getBeforeRunTaskProvider();
-        if (beforeRunTaskProvider == null) {
-            System.out.println("Could not find provider");
-            return;
-        }
-        providerID = beforeRunTaskProvider.getId();
-        for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
-            addCOPETaskToRunConfiguration(runConfiguration);
-        }
+        if (beforeRunTaskProvider != null) {
+            providerID = beforeRunTaskProvider.getId();
 
-        initFileSender();
-
-        workspaceDirectory = storageManager.getLocalStorage().getAbsoluteFile().toPath();
-        permanentDirectory = storageManager.getBundleStorage().getAbsoluteFile().toPath();
-
-
-        //Check if there is a stored updateURL, and if not add it.
-        String updateURL = recorder.getInstallationProperties().getProperty("updateURL");
-        if(!(updateURL == null)) {
-            if(updateURL.isEmpty()){
-                recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+            for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
+                addCOPETaskToRunConfiguration(runConfiguration);
             }
-        }else{
-            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
         }
+    }
 
+    private void doStatusBarIcon() {
         CheckRESTVersion crv = new CheckRESTVersion(this,project);
         Boolean updateReady = crv.isThereNewCOPEVersion();
 
@@ -141,13 +178,16 @@ public class COPEComponent implements ProjectComponent {
             status = new COPEStatus(updateReady);
             statusBar.addWidget(status);
         }
+    }
 
-
-        try {
-            CheckIfSurveyExists();
-        } catch (IOException e) {
-            //WHAT SHOULD WE DO WITH THIS ERROR?
-            e.printStackTrace();
+    private void addUpdateURLIfAbsent() {
+        String updateURL = recorder.getInstallationProperties().getProperty("updateURL");
+        if(!(updateURL == null)) {
+            if(updateURL.isEmpty()){
+                recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+            }
+        }else{
+            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
         }
     }
 
@@ -180,6 +220,9 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void projectClosed() {
+        if (recorder.getUninstaller().isUninstalled())
+            return;
+
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
         ActionManager.getInstance().removeAnActionListener(commandListener);
@@ -222,22 +265,6 @@ public class COPEComponent implements ProjectComponent {
         }
     }
 
-    private void CheckIfSurveyExists() throws IOException {
-        String fileName = getFileName();
-        File workspaceFile = workspaceDirectory.resolve(fileName).toFile();
-        File permanentFile = permanentDirectory.resolve(fileName).toFile();
-
-        if (workspaceFile.exists() && permanentFile.exists()) {
-            //DO NOTHING
-        } else if (!workspaceFile.exists() && permanentFile.exists()) {
-            doOnlyPermanentFileExists(workspaceFile, permanentFile);
-        } else if (workspaceFile.exists() && !permanentFile.exists()) {
-            doOnlyWorkspaceFileExists(workspaceFile, permanentFile);
-        } else if (!workspaceFile.exists() && !permanentFile.exists()) {
-            doNoFileExists(workspaceFile, permanentFile);
-        }
-    }
-
     private void initWorkspace() {
         takeSnapshotOfProject(project);
     }
@@ -246,58 +273,8 @@ public class COPEComponent implements ProjectComponent {
         new EclipseExporter(project, storageManager.getLocalStorage(), recorder).export();
     }
 
-    protected void doOnlyWorkspaceFileExists(File workspaceFile, File permanentFile) throws IOException {
-        Files.copy(workspaceFile.toPath(), permanentFile.toPath());
-    }
-
-    protected void doOnlyPermanentFileExists(File workspaceFile, File permanentFile) throws IOException {
-        Files.copy(permanentFile.toPath(), workspaceFile.toPath());
-    }
-
-
-    protected String getFileName() {
-        return SURVEY_FILENAME;
-    }
-
-    protected void doNoFileExists(final File workspaceFile, final File permanentFile) throws IOException {
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Survey dialog = new Survey();
-                dialog.pack();
-                dialog.setVisible(true);
-
-
-                JSONObject survey = dialog.getSurveyResults();
-                String email = dialog.getEmail();
-
-                try {
-                    writeContentsToFile(workspaceFile.toPath(), survey.toString());
-                    writeContentsToFile(permanentFile.toPath(), survey.toString());
-                    handleEmail(email);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        Thread t = new Thread(r);
-        t.start();
-    }
-
-    private void handleEmail(String email) throws IOException {
-        doFor(permanentDirectory, email);
-        doFor(workspaceDirectory, email);
-    }
-
-    private void doFor(Path parentDirectory, String email) throws IOException {
-        Path emailFile = parentDirectory.resolve(EMAIL_FILENAME);
-        Files.deleteIfExists(emailFile);
-        writeContentsToFile(emailFile, email);
-    }
-
-    protected void writeContentsToFile(Path filePath, String fileContents) throws IOException {
-        Files.write(filePath, fileContents.getBytes(), StandardOpenOption.CREATE);
+    public void takeSnapshotOfProject(){
+        takeSnapshotOfProject(project);
     }
 
 	public CommandExecutionListener getCommandListener() {
