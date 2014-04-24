@@ -246,6 +246,10 @@ public class COPEComponent implements ProjectComponent {
         new EclipseExporter(project, storageManager.getLocalStorage(), recorder).export();
     }
 
+    public void takeSnapshotOfProject(){
+        takeSnapshotOfProject(project);
+    }
+
     protected void doOnlyWorkspaceFileExists(File workspaceFile, File permanentFile) throws IOException {
         Files.copy(workspaceFile.toPath(), permanentFile.toPath());
     }
