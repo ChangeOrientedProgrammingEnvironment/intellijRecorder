@@ -10,7 +10,7 @@ public class IJInstallerHelper implements InstallerHelper {
 
     private COPEComponent component;
 
-    public void IJInstallerHelper(COPEComponent component){
+    public IJInstallerHelper(COPEComponent component){
         this.component = component;
     }
 
