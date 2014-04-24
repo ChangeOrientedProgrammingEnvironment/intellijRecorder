@@ -25,13 +25,8 @@ import org.jetbrains.idea.eclipse.conversion.EclipseUserLibrariesHelper;
 import org.jetbrains.idea.eclipse.conversion.IdeaSpecificSettings;
 import org.jetbrains.jps.eclipse.model.JpsEclipseClasspathSerializer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -69,7 +64,23 @@ public class EclipseExporter {
             recorder.getClientRecorder().recordSnapshot(zipFile.getAbsolutePath());
             try {
                 ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-                ZipUtil.addDirToZipRecursively(outputStream, null, new File(storageRoot), module.getName(), null, null);
+                ZipUtil.addDirToZipRecursively(outputStream, null, new File(storageRoot), module.getName(), new FileFilter() {
+
+                    /**
+                     * We do not accept the local storage files. It is pointless to snapshot
+                     * the things we send to the server anyway.
+                     *
+                     * Also, this causes a deadlock, because it tries to add the archive to itself
+                     * while it's creating it...
+                     */
+                    @Override
+                    public boolean accept(File pathname) {
+                        if (pathname.getAbsolutePath().contains(localStorage.getAbsolutePath()))
+                            return false;
+                        else
+                            return true;
+                    }
+                }, null);
                 outputStream.close();
             } catch (FileNotFoundException e) {
             } catch (IOException e) {
