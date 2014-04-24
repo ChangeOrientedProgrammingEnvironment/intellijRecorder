@@ -13,12 +13,14 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.clientRecorder.Uninstaller;
 import edu.oregonstate.cope.fileSender.FileSender;
 import edu.oregonstate.cope.fileSender.FileSenderParams;
 import edu.oregonstate.cope.intellij.recorder.installation.IJInstaller;
@@ -84,6 +86,30 @@ public class COPEComponent implements ProjectComponent {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
 
+        Uninstaller uninstaller = recorder.getUninstaller();
+
+        if (uninstaller.isUninstalled())
+            return;
+
+        if (uninstaller.shouldUninstall())
+            performUninstall(uninstaller);
+        else
+            performStartup();
+    }
+
+    private void performUninstall(Uninstaller uninstaller) {
+        uninstaller.setUninstall();
+
+        String title = "COPE recorder shutting down";
+        String message = "The time allotted for the study has expired. "
+                + "The recorder plugin has shut down permanently and you may delete it if you wish to do so. "
+                + "\n\nThank you for your participation!";
+
+        Messages.showInfoMessage(project, message, title);
+
+    }
+
+    private void performStartup() {
         if (recorder.isFirstStart()) {
             initWorkspace();
         }
@@ -194,6 +220,9 @@ public class COPEComponent implements ProjectComponent {
 
     @Override
     public void projectClosed() {
+        if (recorder.getUninstaller().isUninstalled())
+            return;
+
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
         ActionManager.getInstance().removeAnActionListener(commandListener);
