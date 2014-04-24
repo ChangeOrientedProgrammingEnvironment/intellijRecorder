@@ -9,6 +9,9 @@ import edu.oregonstate.cope.clientRecorder.installer.SurveyProvider;
 public class IJSurveyOperation extends SurveyOperation {
     @Override
     protected SurveyProvider runSurvey() {
-        return null;
+        IJSurveyProvider ijSurveyProvider = new IJSurveyProvider();
+        ijSurveyProvider.run();
+
+        return ijSurveyProvider;
     }
 }
