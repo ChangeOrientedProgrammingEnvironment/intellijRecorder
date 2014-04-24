@@ -16,12 +16,12 @@ public class IJSurveyProvider implements SurveyProvider {
 
     @Override
     public String getSurveyResults() {
-        return null;
+        return surveyResults;
     }
 
     @Override
     public String getEmail() {
-        return null;
+        return emailResults;
     }
 
     public void run(){
