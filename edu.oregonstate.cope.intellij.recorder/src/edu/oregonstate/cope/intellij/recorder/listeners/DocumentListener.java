@@ -43,4 +43,17 @@ public class DocumentListener implements com.intellij.openapi.editor.event.Docum
 
 		recorder.recordTextChange(text.toString(), offset, length, filePath, changeOrigin);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DocumentListener)
+            return ((DocumentListener)o).filePath.equals(this.filePath);
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return filePath.hashCode();
+    }
 }
