@@ -32,6 +32,7 @@ import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -83,8 +84,11 @@ public class COPEComponent implements ProjectComponent {
         storageManager = new IntelliJStorageManager(project);
         recorder = new RecorderFacade(storageManager, IDE);
 
-        if (recorder.isFirstStart())
+        if (recorder.isFirstStart()) {
             initWorkspace();
+        }
+
+        runInstaller();
 
         registerCommandListener();
 
@@ -99,6 +103,14 @@ public class COPEComponent implements ProjectComponent {
         addUpdateURLIfAbsent();
 
         doStatusBarIcon();
+    }
+
+    private void runInstaller() {
+        try {
+            new IJInstaller(recorder, new IJInstallerHelper(this)).run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerCommandListener() {
