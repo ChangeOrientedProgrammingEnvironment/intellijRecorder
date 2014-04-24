@@ -59,14 +59,14 @@ public class CommandExecutionListener implements AnActionListener {
         if (selectedText == null)
             return;
 
-        String path = getFile(editor);
+        String path = getFile(editor).getCanonicalPath();
 
         copeComponent.getRecorder().getClientRecorder().recordCopy(path, selection.getSelectionStart(), selectedText.length(), selectedText);
     }
 
-    private String getFile(Editor editor) {
+    private VirtualFile getFile(Editor editor) {
         VirtualFile file = FileDocumentManager.getInstance().getFile(editor.getDocument());
-        return file.getCanonicalPath();
+        return file;
     }
 
     @Override
