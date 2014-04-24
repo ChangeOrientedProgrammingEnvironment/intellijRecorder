@@ -8,10 +8,7 @@ import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
 import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 
 //copy pasted from edu.oregonstate.cope.eclipse.listeners.CommandExecutionListener
@@ -62,12 +59,12 @@ public class CommandExecutionListener implements AnActionListener {
         if (selectedText == null)
             return;
 
-        String path = getPath(editor);
+        String path = getFile(editor);
 
         copeComponent.getRecorder().getClientRecorder().recordCopy(path, selection.getSelectionStart(), selectedText.length(), selectedText);
     }
 
-    private String getPath(Editor editor) {
+    private String getFile(Editor editor) {
         VirtualFile file = FileDocumentManager.getInstance().getFile(editor.getDocument());
         return file.getCanonicalPath();
     }
