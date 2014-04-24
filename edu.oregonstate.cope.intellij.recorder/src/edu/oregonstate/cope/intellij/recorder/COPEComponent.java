@@ -98,13 +98,12 @@ public class COPEComponent implements ProjectComponent {
         runManager.addRunManagerListener(new COPERunManagerListener());
 
         beforeRunTaskProvider = getBeforeRunTaskProvider();
-        if (beforeRunTaskProvider == null) {
-            System.out.println("Could not find provider");
-            return;
-        }
-        providerID = beforeRunTaskProvider.getId();
-        for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
-            addCOPETaskToRunConfiguration(runConfiguration);
+        if (beforeRunTaskProvider != null) {
+            providerID = beforeRunTaskProvider.getId();
+
+            for (RunConfiguration runConfiguration : runManager.getAllConfigurationsList()) {
+                addCOPETaskToRunConfiguration(runConfiguration);
+            }
         }
 
         initFileSender();
