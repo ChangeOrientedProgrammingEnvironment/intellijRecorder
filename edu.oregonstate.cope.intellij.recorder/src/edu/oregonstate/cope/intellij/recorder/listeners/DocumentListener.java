@@ -36,6 +36,8 @@ public class DocumentListener implements com.intellij.openapi.editor.event.Docum
 
 		String changeOrigin = ChangeOrigin.USER;
 
+        if (refactoringListener.isRefactoringInProgress())
+            changeOrigin = ChangeOrigin.REFACTORING;
 		if(commandListener.isCutInProgress())
 			changeOrigin = ChangeOrigin.CUT;
 		if(commandListener.isPasteInProgress())
