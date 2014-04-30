@@ -2,6 +2,7 @@ package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.refactoring.listeners.RefactoringEventData;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
+import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +11,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class RefactoringListener implements RefactoringEventListener {
     private boolean isRefactorinInProgress;
+    private RecorderFacade recorder;
+
+    public RefactoringListener(RecorderFacade recorder) {
+        this.recorder = recorder;
+    }
 
     @Override
     public void refactoringStarted(@NotNull String s, @Nullable RefactoringEventData refactoringEventData) {

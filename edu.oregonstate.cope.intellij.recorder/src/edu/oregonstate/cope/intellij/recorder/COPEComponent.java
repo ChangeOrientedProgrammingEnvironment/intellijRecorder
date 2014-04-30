@@ -135,7 +135,7 @@ public class COPEComponent implements ProjectComponent {
     }
 
     private void registerRefactoringListener() {
-        project.getMessageBus().connect().subscribe(RefactoringEventListener.REFACTORING_EVENT_TOPIC, new RefactoringListener());
+        project.getMessageBus().connect().subscribe(RefactoringEventListener.REFACTORING_EVENT_TOPIC, new RefactoringListener(recorder));
     }
 
     private void runInstaller() {
