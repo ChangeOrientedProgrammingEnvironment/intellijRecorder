@@ -120,8 +120,9 @@ public class COPEComponent implements ProjectComponent {
 
         registerCommandListener();
 
-        registerEditorListener();
         registerRefactoringListener();
+
+        registerEditorListener();
 
         registerFileListener();
 
