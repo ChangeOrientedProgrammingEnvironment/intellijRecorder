@@ -40,7 +40,7 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
         }
 
         final Document document = event.getEditor().getDocument();
-        final DocumentListener documentListener = new DocumentListener(filePath, copeComponent.getCommandListener(), recorder);
+        final DocumentListener documentListener = new DocumentListener(filePath, copeComponent.getCommandListener(), copeComponent.getRefactoringListener(), recorder);
         document.addDocumentListener(documentListener);
         documentMap.put(filePath, document);
         listenerMap.put(document, documentListener);

@@ -10,14 +10,18 @@ import edu.oregonstate.cope.intellij.recorder.COPEComponent;
  */
 public class DocumentListener implements com.intellij.openapi.editor.event.DocumentListener {
 
-	private String filePath;
-	private ClientRecorder recorder;
-	private final CommandExecutionListener commandListener;
+    private String filePath;
+    private ClientRecorder recorder;
 
-    public DocumentListener(String filePath, CommandExecutionListener commanListener, ClientRecorder recorder) {
+    private RefactoringListener refactoringListener;
+    private final CommandExecutionListener commandListener;
+
+    public DocumentListener(String filePath, CommandExecutionListener commandListener, RefactoringListener refactoringListener, ClientRecorder recorder) {
         this.filePath = filePath;
         this.recorder = recorder;
-		this.commandListener = commanListener;
+
+        this.refactoringListener = refactoringListener;
+		this.commandListener = commandListener;
     }
 
     @Override
