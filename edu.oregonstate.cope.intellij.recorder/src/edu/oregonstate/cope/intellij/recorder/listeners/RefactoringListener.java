@@ -21,14 +21,14 @@ public class RefactoringListener implements RefactoringEventListener {
     public void refactoringStarted(@NotNull String s, @Nullable RefactoringEventData refactoringEventData) {
         isRefactorinInProgress = true;
 
-        System.out.println("started: " + s);
+        recorder.getClientRecorder().recordRefactoring(s, null);
     }
 
     @Override
     public void refactoringDone(@NotNull String s, @Nullable RefactoringEventData refactoringEventData) {
         isRefactorinInProgress = false;
 
-        System.out.println("ended: " + s);
+        recorder.getClientRecorder().recordRefactoringEnd(s, null);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class RefactoringListener implements RefactoringEventListener {
 
     @Override
     public void undoRefactoring(@NotNull String s) {
-        System.out.println("undone:" + s);
+        recorder.getClientRecorder().recordRefactoringUndo(s, null);
     }
 
     public boolean isRefactoringInProgress(){
