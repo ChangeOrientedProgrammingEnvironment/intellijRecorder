@@ -10,7 +10,11 @@ import org.jetbrains.annotations.Nullable;
  * Created by mihai on 4/24/14.
  */
 public class RefactoringListener implements RefactoringEventListener {
+    public static final int MAXIMUM_REFACTORING_EXECUTION_TIME_MILLIS = 4000;
+
     private boolean isRefactorinInProgress;
+    private long refactoringStartTime; //because IntelliJ misses refactoring events ...
+
     private RecorderFacade recorder;
 
     public RefactoringListener(RecorderFacade recorder) {
@@ -20,6 +24,7 @@ public class RefactoringListener implements RefactoringEventListener {
     @Override
     public void refactoringStarted(@NotNull String s, @Nullable RefactoringEventData refactoringEventData) {
         isRefactorinInProgress = true;
+        refactoringStartTime = System.currentTimeMillis();
 
         recorder.getClientRecorder().recordRefactoring(s, null);
     }
@@ -42,6 +47,9 @@ public class RefactoringListener implements RefactoringEventListener {
     }
 
     public boolean isRefactoringInProgress(){
-        return isRefactorinInProgress;
+        long currentTimeMillis = System.currentTimeMillis();
+        boolean isRefactoringRecent = (currentTimeMillis - refactoringStartTime) < MAXIMUM_REFACTORING_EXECUTION_TIME_MILLIS;
+
+        return isRefactorinInProgress && isRefactoringRecent;
     }
 }
