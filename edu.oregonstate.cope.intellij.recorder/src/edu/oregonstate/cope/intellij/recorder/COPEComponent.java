@@ -64,8 +64,8 @@ public class COPEComponent implements ProjectComponent {
 
     private FileListener fileListener;
     private EditorFactoryListener editorFactoryListener;
-
     private CommandExecutionListener commandListener;
+    private RefactoringListener refactoringListener;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -135,7 +135,9 @@ public class COPEComponent implements ProjectComponent {
     }
 
     private void registerRefactoringListener() {
-        project.getMessageBus().connect().subscribe(RefactoringEventListener.REFACTORING_EVENT_TOPIC, new RefactoringListener(recorder));
+        refactoringListener = new RefactoringListener(recorder);
+
+        project.getMessageBus().connect().subscribe(RefactoringEventListener.REFACTORING_EVENT_TOPIC, refactoringListener);
     }
 
     private void runInstaller() {
@@ -287,6 +289,10 @@ public class COPEComponent implements ProjectComponent {
 	public CommandExecutionListener getCommandListener() {
 		return commandListener;
 	}
+
+    public RefactoringListener getRefactoringListener(){
+        return refactoringListener;
+    }
 
     public Project getProject() {
         return project;
