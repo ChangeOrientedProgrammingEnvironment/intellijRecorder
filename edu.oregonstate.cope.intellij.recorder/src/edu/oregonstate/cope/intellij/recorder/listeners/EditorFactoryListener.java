@@ -3,6 +3,7 @@ package edu.oregonstate.cope.intellij.recorder.listeners;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.EditorFactoryEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 import edu.oregonstate.cope.intellij.recorder.COPEComponent;
@@ -33,14 +34,17 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
     @Override
     public void editorCreated(@NotNull EditorFactoryEvent event) {
         String filePath = getPathOfAffectedFile(event);
-        if (filePath == null)
+
+        if (filePath == null) {
             return;
+        }
+
         if (copeComponent.fileIsInCOPEStructure(getAffectedVirtualFile(event))) {
             return;
         }
 
         final Document document = event.getEditor().getDocument();
-        final DocumentListener documentListener = new DocumentListener(filePath, copeComponent.getCommandListener(), recorder);
+        final DocumentListener documentListener = new DocumentListener(filePath, copeComponent.getCommandListener(), copeComponent.getRefactoringListener(), recorder);
         document.addDocumentListener(documentListener);
         documentMap.put(filePath, document);
         listenerMap.put(document, documentListener);
@@ -57,13 +61,24 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
     }
 
     private VirtualFile getAffectedVirtualFile(EditorFactoryEvent event) {
-        VirtualFile baseDir = event.getEditor().getProject().getBaseDir();
+        Project project = event.getEditor().getProject();
+
+        if (project == null){
+            return null;
+        }
+
+        VirtualFile baseDir = project.getBaseDir();
         return FileDocumentManager.getInstance().getFile(event.getEditor().getDocument());
     }
 
     @Override
     public void editorReleased(@NotNull EditorFactoryEvent event) {
         String filePath = getPathOfAffectedFile(event);
+
+        if (filePath == null) {
+            return;
+        }
+
         recorder.recordFileClose(filePath);
 
         Document document = documentMap.get(filePath);

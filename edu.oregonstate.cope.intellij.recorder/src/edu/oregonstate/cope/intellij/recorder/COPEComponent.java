@@ -4,8 +4,8 @@ import com.intellij.execution.BeforeRunTask;
 import com.intellij.execution.BeforeRunTaskProvider;
 import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.extensions.Extensions;
@@ -19,6 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.refactoring.listeners.RefactoringEventListener;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import edu.oregonstate.cope.clientRecorder.Uninstaller;
 import edu.oregonstate.cope.fileSender.FileSender;
@@ -31,6 +32,7 @@ import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.CommandExecutionListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
+import edu.oregonstate.cope.intellij.recorder.listeners.RefactoringListener;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 
@@ -62,8 +64,8 @@ public class COPEComponent implements ProjectComponent {
 
     private FileListener fileListener;
     private EditorFactoryListener editorFactoryListener;
-
     private CommandExecutionListener commandListener;
+    private RefactoringListener refactoringListener;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -118,6 +120,8 @@ public class COPEComponent implements ProjectComponent {
 
         registerCommandListener();
 
+        registerRefactoringListener();
+
         registerEditorListener();
 
         registerFileListener();
@@ -129,6 +133,12 @@ public class COPEComponent implements ProjectComponent {
         addUpdateURLIfAbsent();
 
         doStatusBarIcon();
+    }
+
+    private void registerRefactoringListener() {
+        refactoringListener = new RefactoringListener(recorder);
+
+        project.getMessageBus().connect().subscribe(RefactoringEventListener.REFACTORING_EVENT_TOPIC, refactoringListener);
     }
 
     private void runInstaller() {
@@ -280,6 +290,10 @@ public class COPEComponent implements ProjectComponent {
 	public CommandExecutionListener getCommandListener() {
 		return commandListener;
 	}
+
+    public RefactoringListener getRefactoringListener(){
+        return refactoringListener;
+    }
 
     public Project getProject() {
         return project;
