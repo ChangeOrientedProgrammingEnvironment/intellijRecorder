@@ -8,12 +8,8 @@ import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
 import edu.oregonstate.cope.intellij.recorder.COPEComponent;
-import sun.plugin.dom.core.CoreConstants;
 
 //copy pasted from edu.oregonstate.cope.eclipse.listeners.CommandExecutionListener
 public class CommandExecutionListener implements AnActionListener {
@@ -54,7 +50,7 @@ public class CommandExecutionListener implements AnActionListener {
     private void recordCopy(DataContext dataContext, AnActionEvent anActionEvent) {
         Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
 
-        if (editor == null)
+        if (editor == null || getFile(editor) == null)
             return;
 
         SelectionModel selection = editor.getSelectionModel();
@@ -63,14 +59,14 @@ public class CommandExecutionListener implements AnActionListener {
         if (selectedText == null)
             return;
 
-        String path = getPath(editor);
+        String path = getFile(editor).getCanonicalPath();
 
         copeComponent.getRecorder().getClientRecorder().recordCopy(path, selection.getSelectionStart(), selectedText.length(), selectedText);
     }
 
-    private String getPath(Editor editor) {
+    private VirtualFile getFile(Editor editor) {
         VirtualFile file = FileDocumentManager.getInstance().getFile(editor.getDocument());
-        return file.getCanonicalPath();
+        return file;
     }
 
     @Override

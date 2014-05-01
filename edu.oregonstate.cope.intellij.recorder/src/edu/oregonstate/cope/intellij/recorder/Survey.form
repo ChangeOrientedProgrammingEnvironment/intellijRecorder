@@ -312,7 +312,7 @@
                         </constraints>
                         <properties>
                           <labelFor value="42b03"/>
-                          <text value="What is the extent of your experience with Eclipse of IntelliJ IDEA IDE"/>
+                          <text value="What is the extent of your experience with Eclipse or IntelliJ IDEA IDE"/>
                         </properties>
                       </component>
                       <grid id="f08f7" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
