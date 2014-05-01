@@ -10,6 +10,10 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -20,6 +24,7 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
+import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import edu.oregonstate.cope.clientRecorder.Uninstaller;
 import edu.oregonstate.cope.fileSender.FileSender;
@@ -29,10 +34,7 @@ import edu.oregonstate.cope.intellij.recorder.installation.IJInstallerHelper;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
-import edu.oregonstate.cope.intellij.recorder.listeners.CommandExecutionListener;
-import edu.oregonstate.cope.intellij.recorder.listeners.EditorFactoryListener;
-import edu.oregonstate.cope.intellij.recorder.listeners.FileListener;
-import edu.oregonstate.cope.intellij.recorder.listeners.RefactoringListener;
+import edu.oregonstate.cope.intellij.recorder.listeners.*;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 
@@ -63,9 +65,9 @@ public class COPEComponent implements ProjectComponent {
     private BeforeRunTaskProvider<COPEBeforeRunTask> beforeRunTaskProvider;
 
     private FileListener fileListener;
-    private EditorFactoryListener editorFactoryListener;
     private CommandExecutionListener commandListener;
     private RefactoringListener refactoringListener;
+    private MyFileEditorManagerListener fileEditorListener;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -155,8 +157,8 @@ public class COPEComponent implements ProjectComponent {
     }
 
     private void registerEditorListener() {
-        editorFactoryListener = new EditorFactoryListener(this, recorder.getClientRecorder());
-        EditorFactory.getInstance().addEditorFactoryListener(editorFactoryListener);
+        fileEditorListener = new MyFileEditorManagerListener(this, recorder.getClientRecorder());
+        FileEditorManager.getInstance(project).addFileEditorManagerListener(fileEditorListener);
     }
 
     private void registerFileListener() {
@@ -234,7 +236,7 @@ public class COPEComponent implements ProjectComponent {
             return;
 
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
-        EditorFactory.getInstance().removeEditorFactoryListener(editorFactoryListener);
+        FileEditorManager.getInstance(project).removeFileEditorManagerListener(fileEditorListener);
         ActionManager.getInstance().removeAnActionListener(commandListener);
 
         takeSnapshotOfProject(project);
@@ -302,5 +304,6 @@ public class COPEComponent implements ProjectComponent {
     public String getPluginVersion() {
         return PluginManager.getPlugin(PluginId.getId(COPEComponent.ID)).getVersion();
     }
+
 
 }
