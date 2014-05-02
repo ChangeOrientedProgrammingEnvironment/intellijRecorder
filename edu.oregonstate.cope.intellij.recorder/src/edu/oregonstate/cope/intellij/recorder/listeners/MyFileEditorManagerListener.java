@@ -42,6 +42,9 @@ public class MyFileEditorManagerListener implements FileEditorManagerListener {
             return;
         }
 
+        if (listenerMap.containsKey(file))
+            return;
+
         final DocumentListener documentListener = new DocumentListener(filePath, copeComponent.getCommandListener(), copeComponent.getRefactoringListener(), clientRecorder);
         document.addDocumentListener(documentListener);
 
@@ -64,6 +67,8 @@ public class MyFileEditorManagerListener implements FileEditorManagerListener {
 
         DocumentListener documentListener = listenerMap.get(file);
         document.removeDocumentListener(documentListener);
+
+        listenerMap.remove(file);
     }
 
     @Override
