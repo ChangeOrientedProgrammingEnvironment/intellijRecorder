@@ -119,7 +119,7 @@ public class TestListener extends TestStatusListener {
 			return Result.ERROR;
 		}
 
-		if (testMagnitude == PoolOfTestStates.FAILED_INDEX) {
+		if (testMagnitude == PoolOfTestStates.FAILED_INDEX || testMagnitude == PoolOfTestStates.COMPARISON_FAILURE) {
 			return Result.FAILURE;
 		}
 
