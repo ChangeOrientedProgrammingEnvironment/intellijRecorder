@@ -157,7 +157,7 @@ public class COPEComponent implements ProjectComponent {
         fileEditorListener = new MyFileEditorManagerListener(this, recorder.getClientRecorder());
         FileEditorManager.getInstance(project).addFileEditorManagerListener(fileEditorListener);
 
-        documentListener = new FilelessDocumentListener(getCommandListener(), getRefactoringListener(), recorder.getClientRecorder());
+        documentListener = new FilelessDocumentListener(this, getCommandListener(), getRefactoringListener(), recorder.getClientRecorder());
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(documentListener);
     }
 

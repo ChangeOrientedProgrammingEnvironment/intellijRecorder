@@ -6,18 +6,21 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.oregonstate.cope.clientRecorder.ChangeOrigin;
 import edu.oregonstate.cope.clientRecorder.ClientRecorder;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 
 /**
  * Created by caius on 3/3/14.
  */
 public class FilelessDocumentListener implements com.intellij.openapi.editor.event.DocumentListener {
 
+    private COPEComponent copeComponent;
     private ClientRecorder recorder;
 
     private RefactoringListener refactoringListener;
     private final CommandExecutionListener commandListener;
 
-    public FilelessDocumentListener(CommandExecutionListener commandListener, RefactoringListener refactoringListener, ClientRecorder recorder) {
+    public FilelessDocumentListener(COPEComponent copeComponent, CommandExecutionListener commandListener, RefactoringListener refactoringListener, ClientRecorder recorder) {
+        this.copeComponent = copeComponent;
         this.recorder = recorder;
 
         this.refactoringListener = refactoringListener;
