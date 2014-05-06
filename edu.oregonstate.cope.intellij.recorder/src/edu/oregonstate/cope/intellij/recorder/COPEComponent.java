@@ -265,6 +265,18 @@ public class COPEComponent implements ProjectComponent {
         return storageManager.isPathInManagedStorage(file.getPath());
     }
 
+    public boolean ignoreFile(VirtualFile file) {
+        if (!fileIsInProject(file)) {
+            return true;
+        }
+
+        if (fileIsInCOPEStructure(file)) {
+            return true;
+        }
+
+        return false;
+    }
+
     private void initFileSender() {
         try {
             new FileSender(new FileSenderParams(
