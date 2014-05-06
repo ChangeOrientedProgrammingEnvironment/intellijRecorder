@@ -8,14 +8,9 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.event.*;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
-import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -26,7 +21,6 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
-import edu.oregonstate.cope.clientRecorder.ClientRecorder;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
 import edu.oregonstate.cope.clientRecorder.Uninstaller;
 import edu.oregonstate.cope.fileSender.FileSender;
@@ -127,7 +121,7 @@ public class COPEComponent implements ProjectComponent {
 
         registerRefactoringListener();
 
-        registerEditorListener();
+        registerEditorDocumentListeners();
 
         registerFileListener();
 
@@ -159,7 +153,7 @@ public class COPEComponent implements ProjectComponent {
         ActionManager.getInstance().addAnActionListener(commandListener);
     }
 
-    private void registerEditorListener() {
+    private void registerEditorDocumentListeners() {
         fileEditorListener = new MyFileEditorManagerListener(this, recorder.getClientRecorder());
         FileEditorManager.getInstance(project).addFileEditorManagerListener(fileEditorListener);
 
