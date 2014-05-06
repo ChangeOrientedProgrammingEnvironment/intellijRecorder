@@ -33,10 +33,11 @@ public class FilelessDocumentListener implements com.intellij.openapi.editor.eve
 
     @Override
     public void documentChanged(DocumentEvent event) {
-        String filePath = getFilePath(event);
+        VirtualFile virtualFile = getVirtualFile(event);
 
-        if (filePath == null)
+        if(virtualFile == null || copeComponent.ignoreFile(virtualFile)){
             return;
+        }
 
         int offset = event.getOffset();
         int length = event.getOldLength();
@@ -55,10 +56,10 @@ public class FilelessDocumentListener implements com.intellij.openapi.editor.eve
 		if(commandListener.isUndoInProgress())
 			changeOrigin = ChangeOrigin.UNDO;
 
-		recorder.recordTextChange(text.toString(), offset, length, filePath, changeOrigin);
+		recorder.recordTextChange(text.toString(), offset, length, virtualFile.getCanonicalPath(), changeOrigin);
     }
 
-    private String getFilePath(DocumentEvent event) {
+    private VirtualFile getVirtualFile(DocumentEvent event){
         Document document = event.getDocument();
 
         if(document == null)
@@ -66,9 +67,6 @@ public class FilelessDocumentListener implements com.intellij.openapi.editor.eve
 
         VirtualFile file = FileDocumentManager.getInstance().getFile(document);
 
-        if (file == null)
-            return null;
-
-        return file.getCanonicalPath();
+        return file;
     }
 }
