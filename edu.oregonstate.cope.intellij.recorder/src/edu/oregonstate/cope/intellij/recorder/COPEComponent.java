@@ -8,6 +8,8 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.event.*;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -68,6 +70,7 @@ public class COPEComponent implements ProjectComponent {
     private CommandExecutionListener commandListener;
     private RefactoringListener refactoringListener;
     private MyFileEditorManagerListener fileEditorListener;
+    private FilelessDocumentListener documentListener;
 
     public COPEComponent(Project project) {
         this.project = project;
@@ -159,6 +162,9 @@ public class COPEComponent implements ProjectComponent {
     private void registerEditorListener() {
         fileEditorListener = new MyFileEditorManagerListener(this, recorder.getClientRecorder());
         FileEditorManager.getInstance(project).addFileEditorManagerListener(fileEditorListener);
+
+        documentListener = new FilelessDocumentListener(getCommandListener(), getRefactoringListener(), recorder.getClientRecorder());
+        EditorFactory.getInstance().getEventMulticaster().addDocumentListener(documentListener);
     }
 
     private void registerFileListener() {
@@ -235,6 +241,7 @@ public class COPEComponent implements ProjectComponent {
         if (recorder.getUninstaller().isUninstalled())
             return;
 
+        EditorFactory.getInstance().getEventMulticaster().removeDocumentListener(documentListener);
         VirtualFileManager.getInstance().removeVirtualFileListener(fileListener);
         FileEditorManager.getInstance(project).removeFileEditorManagerListener(fileEditorListener);
         ActionManager.getInstance().removeAnActionListener(commandListener);
