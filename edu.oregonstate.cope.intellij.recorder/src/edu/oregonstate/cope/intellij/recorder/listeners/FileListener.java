@@ -30,7 +30,7 @@ public class FileListener implements VirtualFileListener {
 
     @Override
     public void contentsChanged(@NotNull VirtualFileEvent event) {
-        if (ignoreEvent(event)) {
+        if (copeComponent.ignoreFile(event.getFile())) {
             return;
         }
 
@@ -56,21 +56,9 @@ public class FileListener implements VirtualFileListener {
         recorderFacade.getClientRecorder().recordRefresh(fileContents, filePath, modificationStamp);
     }
 
-    private boolean ignoreEvent(VirtualFileEvent event) {
-        if (!copeComponent.fileIsInProject(event.getFile())) {
-            return true;
-        }
-
-        if (copeComponent.fileIsInCOPEStructure(event.getFile())) {
-            return true;
-        }
-
-        return false;
-    }
-
     @Override
     public void fileCreated(@NotNull VirtualFileEvent event) {
-        if (ignoreEvent(event)) {
+        if (copeComponent.ignoreFile(event.getFile())) {
             return;
         }
 
@@ -80,7 +68,7 @@ public class FileListener implements VirtualFileListener {
 
     @Override
     public void fileDeleted(@NotNull VirtualFileEvent event) {
-        if (ignoreEvent(event)) {
+        if (copeComponent.ignoreFile(event.getFile())) {
             return;
         }
 
