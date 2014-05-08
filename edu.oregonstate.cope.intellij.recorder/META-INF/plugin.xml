@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.oregonstate.cope.intellij.recorder</id>
   <name>COPE Recorder</name>
-  <version>0.9.1</version>
+  <version>0.9.3</version>
   <vendor email="cope@eecs.oregonstate.edu" url="http://cope.eecs.oregonstate.edu">Oregon State University</vendor>
 
   <description><![CDATA[
