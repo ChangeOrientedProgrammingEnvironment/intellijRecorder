@@ -1,12 +1,11 @@
 package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiStatement;
 import com.intellij.refactoring.listeners.RefactoringEventData;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
 import com.intellij.usageView.UsageInfo;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 import edu.oregonstate.cope.intellij.recorder.RecorderPsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,10 +23,12 @@ public class RefactoringListener implements RefactoringEventListener {
     private boolean isRefactorinInProgress;
     private long refactoringStartTime; //because IntelliJ misses refactoring events ...
 
-    private RecorderFacade recorder;
+	private COPEComponent copeComponent;
+	private RecorderFacade recorder;
 
-    public RefactoringListener(RecorderFacade recorder) {
-        this.recorder = recorder;
+    public RefactoringListener(COPEComponent copeComponent, RecorderFacade recorder) {
+		this.copeComponent = copeComponent;
+		this.recorder = recorder;
     }
 
     @Override
