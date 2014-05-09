@@ -61,7 +61,7 @@ public class CommandExecutionListener implements AnActionListener {
 
         String path = getFile(editor).getCanonicalPath();
 
-        copeComponent.getRecorder().getClientRecorder().recordCopy(path, selection.getSelectionStart(), selectedText.length(), selectedText);
+        copeComponent.getRecorder().getClientRecorder().recordCopy(copeComponent.truncateAbsolutePath(path), selection.getSelectionStart(), selectedText.length(), selectedText);
     }
 
     private VirtualFile getFile(Editor editor) {

@@ -44,12 +44,12 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
         }
 
         final Document document = event.getEditor().getDocument();
-        final DocumentListener documentListener = new DocumentListener(filePath, copeComponent.getCommandListener(), copeComponent.getRefactoringListener(), recorder);
+        final DocumentListener documentListener = new DocumentListener(copeComponent.truncateAbsolutePath(filePath), copeComponent.getCommandListener(), copeComponent.getRefactoringListener(), recorder);
         document.addDocumentListener(documentListener);
         documentMap.put(filePath, document);
         listenerMap.put(document, documentListener);
 
-        recorder.recordFileOpen(filePath);
+        recorder.recordFileOpen(copeComponent.truncateAbsolutePath(filePath));
     }
 
     private String getPathOfAffectedFile(EditorFactoryEvent event) {
@@ -79,7 +79,7 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
             return;
         }
 
-        recorder.recordFileClose(filePath);
+        recorder.recordFileClose(copeComponent.truncateAbsolutePath(filePath));
 
         Document document = documentMap.get(filePath);
         if (document == null)

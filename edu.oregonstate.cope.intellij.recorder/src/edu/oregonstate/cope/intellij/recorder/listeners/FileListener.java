@@ -45,7 +45,7 @@ public class FileListener implements VirtualFileListener {
         String filePath = event.getFile().getCanonicalPath();
         long modificationStamp = event.getNewModificationStamp();
 
-        recorderFacade.getClientRecorder().recordFileSave(filePath, modificationStamp);
+        recorderFacade.getClientRecorder().recordFileSave(copeComponent.truncateAbsolutePath(filePath), modificationStamp);
     }
 
     private void recordRefresh(VirtualFileEvent event) {
@@ -53,7 +53,7 @@ public class FileListener implements VirtualFileListener {
         String filePath = event.getFile().getCanonicalPath();
         long modificationStamp = event.getNewModificationStamp();
 
-        recorderFacade.getClientRecorder().recordRefresh(fileContents, filePath, modificationStamp);
+        recorderFacade.getClientRecorder().recordRefresh(fileContents, copeComponent.truncateAbsolutePath(filePath), modificationStamp);
     }
 
     @Override
@@ -63,7 +63,9 @@ public class FileListener implements VirtualFileListener {
         }
 
         VirtualFile file = event.getFile();
-        recorderFacade.getClientRecorder().recordResourceAdd(file.getPath(), getFileContents(file));
+        String path = file.getPath();
+
+        recorderFacade.getClientRecorder().recordResourceAdd(copeComponent.truncateAbsolutePath(path), getFileContents(file));
     }
 
     @Override
@@ -72,7 +74,9 @@ public class FileListener implements VirtualFileListener {
             return;
         }
 
-        recorderFacade.getClientRecorder().recordResourceDelete(event.getFile().getPath());
+        String path = event.getFile().getPath();
+
+        recorderFacade.getClientRecorder().recordResourceDelete(copeComponent.truncateAbsolutePath(path));
     }
 
     @Override
