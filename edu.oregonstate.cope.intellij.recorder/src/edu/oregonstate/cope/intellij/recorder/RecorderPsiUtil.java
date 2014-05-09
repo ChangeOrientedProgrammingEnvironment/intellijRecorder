@@ -18,30 +18,22 @@ import java.util.ListIterator;
 public class RecorderPsiUtil {
     public static String getQualifiedName(PsiElement psiElement){
 
-        //if (psiElement instanceof PsiMember)
-        //    return PsiUtil.getMemberQualifiedName((PsiMember) psiElement);
+        if (psiElement instanceof PsiMember)
+            return PsiUtil.getMemberQualifiedName((PsiMember) psiElement);
 
         if(psiElement instanceof PsiQualifiedNamedElement)
             return ((PsiQualifiedNamedElement)psiElement).getQualifiedName();
 
         List<PsiElement> ancestors = getPathToRoot(psiElement);
 
-        List<String> nameFragments = new ArrayList<>();
+        List<String> nameFragments = mapAncestorsToNames(ancestors);
 
-        for (PsiElement pathElement : ancestors){
-            if(pathElement instanceof PsiQualifiedNamedElement){
-                nameFragments.add(((PsiQualifiedNamedElement) pathElement).getQualifiedName());
-                break;
-            }
+        String qualifiedName = stitchNameFragments(psiElement, nameFragments);
 
-            String simpleName = PsiUtilCore.getName(pathElement);
+        return qualifiedName;
+    }
 
-            if (simpleName != null)
-                nameFragments.add(simpleName);
-            else
-                continue;
-        }
-
+    private static String stitchNameFragments(PsiElement psiElement, List<String> nameFragments) {
         String qualifiedName = "";
 
         ReverseListIterator<String> iterator = new ReverseListIterator<>(nameFragments);
@@ -58,11 +50,29 @@ public class RecorderPsiUtil {
         return qualifiedName;
     }
 
+    private static List<String> mapAncestorsToNames(List<PsiElement> ancestors) {
+        List<String> nameFragments = new ArrayList<>();
+
+        for (PsiElement pathElement : ancestors){
+            if(pathElement instanceof PsiQualifiedNamedElement){
+                nameFragments.add(((PsiQualifiedNamedElement) pathElement).getQualifiedName());
+                break;
+            }
+
+            String simpleName = PsiUtilCore.getName(pathElement);
+
+            if (simpleName != null)
+                nameFragments.add(simpleName);
+            else
+                continue;
+        }
+
+        return nameFragments;
+    }
+
     /**
-     * Does not contain initial element
-     * Order: from element to root
      * @param psiElement
-     * @return
+     * @return list of psi elements starting from parent of psiElement up to root
      */
     private static List<PsiElement> getPathToRoot(PsiElement psiElement) {
         List<PsiElement> pathToRoot = new ArrayList<>();
