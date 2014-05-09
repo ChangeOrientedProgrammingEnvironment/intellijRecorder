@@ -30,7 +30,7 @@ public class FileListener implements VirtualFileListener {
 
     @Override
     public void contentsChanged(@NotNull VirtualFileEvent event) {
-        if (copeComponent.ignoreFile(event.getFile())) {
+        if (copeComponent.shouldIgnoreFile(event.getFile())) {
             return;
         }
 
@@ -58,7 +58,7 @@ public class FileListener implements VirtualFileListener {
 
     @Override
     public void fileCreated(@NotNull VirtualFileEvent event) {
-        if (copeComponent.ignoreFile(event.getFile())) {
+        if (copeComponent.shouldIgnoreFile(event.getFile())) {
             return;
         }
 
@@ -68,7 +68,7 @@ public class FileListener implements VirtualFileListener {
 
     @Override
     public void fileDeleted(@NotNull VirtualFileEvent event) {
-        if (copeComponent.ignoreFile(event.getFile())) {
+        if (copeComponent.shouldIgnoreFile(event.getFile())) {
             return;
         }
 

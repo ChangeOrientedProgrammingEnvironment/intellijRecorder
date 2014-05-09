@@ -265,7 +265,7 @@ public class COPEComponent implements ProjectComponent {
         return storageManager.isPathInManagedStorage(file.getPath());
     }
 
-    public boolean ignoreFile(VirtualFile file) {
+    public boolean shouldIgnoreFile(VirtualFile file) {
         if (!fileIsInProject(file)) {
             return true;
         }

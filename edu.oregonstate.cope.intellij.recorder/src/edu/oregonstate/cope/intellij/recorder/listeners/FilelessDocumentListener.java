@@ -35,7 +35,7 @@ public class FilelessDocumentListener implements com.intellij.openapi.editor.eve
     public void documentChanged(DocumentEvent event) {
         VirtualFile virtualFile = getVirtualFile(event);
 
-        if(virtualFile == null || copeComponent.ignoreFile(virtualFile)){
+        if(virtualFile == null || copeComponent.shouldIgnoreFile(virtualFile)){
             return;
         }
 
