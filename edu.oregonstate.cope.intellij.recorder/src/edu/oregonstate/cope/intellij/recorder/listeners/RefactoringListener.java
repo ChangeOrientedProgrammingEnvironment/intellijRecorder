@@ -10,9 +10,7 @@ import edu.oregonstate.cope.intellij.recorder.RecorderPsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by mihai on 4/24/14.
@@ -53,13 +51,13 @@ public class RefactoringListener implements RefactoringEventListener {
         }
 
         if (elementArray != null){
-            Map<String, Object> elementsMap = newMap();
+			List<Object> elementsList = new ArrayList<>();
 
             for (PsiElement element : elementArray){
-                elementsMap.put("element", constructPSIMap(element));
+				elementsList.add(constructPSIMap(element));
             }
 
-            argumentsMap.put("elements", elementArray);
+            argumentsMap.put("elements", elementsList);
         }
 
         return argumentsMap;
