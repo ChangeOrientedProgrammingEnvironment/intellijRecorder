@@ -38,7 +38,7 @@ public class MyFileEditorManagerListener implements FileEditorManagerListener {
             return;
         }
 
-        clientRecorder.recordFileOpen(filePath);
+        clientRecorder.recordFileOpen(copeComponent.truncateAbsolutePath(filePath));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class MyFileEditorManagerListener implements FileEditorManagerListener {
             return;
         }
 
-        clientRecorder.recordFileClose(filePath);
+        clientRecorder.recordFileClose(copeComponent.truncateAbsolutePath(filePath));
     }
 
     @Override

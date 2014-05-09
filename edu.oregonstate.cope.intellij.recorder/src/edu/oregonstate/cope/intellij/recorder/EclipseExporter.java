@@ -61,7 +61,9 @@ public class EclipseExporter {
             }
             String storageRoot = getStorageRoot(module);
             File zipFile = createZipFile(module.getName(), localStorage);
-            recorder.getClientRecorder().recordSnapshot(zipFile.getAbsolutePath());
+
+            recordSnapshot(zipFile);
+
             try {
                 ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(zipFile));
                 ZipUtil.addDirToZipRecursively(outputStream, null, new File(storageRoot), module.getName(), new FileFilter() {
@@ -100,6 +102,13 @@ public class EclipseExporter {
         }
 
         project.save();
+    }
+
+    private void recordSnapshot(File zipFile) {
+        String absolutePath = zipFile.getAbsolutePath();
+        String relativePathToProject = project.getComponent(COPEComponent.class).truncateAbsolutePath(absolutePath);
+
+        recorder.getClientRecorder().recordSnapshot(relativePathToProject);
     }
 
     private boolean isModuleEclipseFriendly(Module module) {
