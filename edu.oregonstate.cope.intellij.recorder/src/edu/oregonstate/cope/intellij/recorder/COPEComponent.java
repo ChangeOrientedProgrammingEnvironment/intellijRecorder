@@ -135,7 +135,7 @@ public class COPEComponent implements ProjectComponent {
     }
 
     private void registerRefactoringListener() {
-        refactoringListener = new RefactoringListener(recorder);
+        refactoringListener = new RefactoringListener(this, recorder);
 
         project.getMessageBus().connect().subscribe(RefactoringEventListener.REFACTORING_EVENT_TOPIC, refactoringListener);
     }
@@ -318,5 +318,7 @@ public class COPEComponent implements ProjectComponent {
         return PluginManager.getPlugin(PluginId.getId(COPEComponent.ID)).getVersion();
     }
 
-
+	public String truncateAbsolutePath(String path) {
+		return path;
+	}
 }
