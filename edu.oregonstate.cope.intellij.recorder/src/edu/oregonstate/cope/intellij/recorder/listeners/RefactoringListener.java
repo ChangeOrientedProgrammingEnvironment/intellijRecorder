@@ -1,10 +1,17 @@
 package edu.oregonstate.cope.intellij.recorder.listeners;
 
+import com.intellij.psi.PsiElement;
 import com.intellij.refactoring.listeners.RefactoringEventData;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
+import com.intellij.usageView.UsageInfo;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
+import edu.oregonstate.cope.intellij.recorder.RecorderPsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by mihai on 4/24/14.
@@ -26,7 +33,27 @@ public class RefactoringListener implements RefactoringEventListener {
         isRefactorinInProgress = true;
         refactoringStartTime = System.currentTimeMillis();
 
+        Map argumentsMap = constructArgumentsMap(refactoringEventData);
+
         recorder.getClientRecorder().recordRefactoring(s, null);
+    }
+
+    private Map constructArgumentsMap(RefactoringEventData refactoringEventData) {
+        Collection<UsageInfo> usageInfo = refactoringEventData.getUserData(RefactoringEventData.USAGE_INFOS_KEY);
+        PsiElement psiElement = refactoringEventData.getUserData(RefactoringEventData.PSI_ELEMENT_KEY);
+        PsiElement[] elementArray = refactoringEventData.getUserData(RefactoringEventData.PSI_ELEMENT_ARRAY_KEY);
+
+        Map<String, String> argumentsMap = newMap();
+
+        if(psiElement != null){
+            argumentsMap.put("psiElement", RecorderPsiUtil.getQualifiedName(psiElement));
+        }
+
+        return argumentsMap;
+    }
+
+    private HashMap<String, String> newMap() {
+        return new HashMap<String, String>();
     }
 
     @Override
