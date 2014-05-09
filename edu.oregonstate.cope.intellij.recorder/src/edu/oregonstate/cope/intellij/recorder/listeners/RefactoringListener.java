@@ -43,7 +43,7 @@ public class RefactoringListener implements RefactoringEventListener {
         PsiElement psiElement = refactoringEventData.getUserData(RefactoringEventData.PSI_ELEMENT_KEY);
         PsiElement[] elementArray = refactoringEventData.getUserData(RefactoringEventData.PSI_ELEMENT_ARRAY_KEY);
 
-        Map<String, String> argumentsMap = newMap();
+        Map<String, Object> argumentsMap = newMap();
 
         if(psiElement != null){
             argumentsMap.put("psiElement", RecorderPsiUtil.getQualifiedName(psiElement));
@@ -52,8 +52,8 @@ public class RefactoringListener implements RefactoringEventListener {
         return argumentsMap;
     }
 
-    private HashMap<String, String> newMap() {
-        return new HashMap<String, String>();
+    private HashMap<String, Object> newMap() {
+        return new HashMap<String, Object>();
     }
 
     @Override
