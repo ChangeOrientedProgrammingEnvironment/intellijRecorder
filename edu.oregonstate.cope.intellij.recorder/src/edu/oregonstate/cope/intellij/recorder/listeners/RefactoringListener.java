@@ -1,6 +1,7 @@
 package edu.oregonstate.cope.intellij.recorder.listeners;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiStatement;
 import com.intellij.refactoring.listeners.RefactoringEventData;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
 import com.intellij.usageView.UsageInfo;
@@ -47,6 +48,19 @@ public class RefactoringListener implements RefactoringEventListener {
 
         if(psiElement != null){
             argumentsMap.put("psiElement", RecorderPsiUtil.getQualifiedName(psiElement));
+        }
+
+        if (elementArray != null){
+            Map<String, Object> elementsArray = newMap();
+
+            for (PsiElement element : elementArray){
+                if (element instanceof PsiStatement)
+                    System.err.println("ref arg map not implemented for statements");
+                else
+                    elementsArray.put("element", RecorderPsiUtil.getQualifiedName(element));
+            }
+
+            argumentsMap.put("elements", elementArray);
         }
 
         return argumentsMap;
