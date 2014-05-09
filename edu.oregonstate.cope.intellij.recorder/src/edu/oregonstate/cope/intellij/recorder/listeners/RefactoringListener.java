@@ -17,8 +17,15 @@ import java.util.*;
  */
 public class RefactoringListener implements RefactoringEventListener {
     public static final int MAXIMUM_REFACTORING_EXECUTION_TIME_MILLIS = 4000;
+	public static final String PSI_ELEMENT = "psiElement";
+	public static final String ELEMENTS = "elements";
+	public static final String PSI_TYPE = "psiType";
+	public static final String QUALIFIED = "qualified";
+	public static final String FILE = "file";
+	public static final String OFFSET = "offset";
+	public static final String LENGTH = "length";
 
-    private boolean isRefactorinInProgress;
+	private boolean isRefactorinInProgress;
     private long refactoringStartTime; //because IntelliJ misses refactoring events ...
 
 	private COPEComponent copeComponent;
@@ -47,7 +54,7 @@ public class RefactoringListener implements RefactoringEventListener {
         Map<String, Object> argumentsMap = newMap();
 
         if(psiElement != null){
-            argumentsMap.put("psiElement", constructPSIMap(psiElement));
+            argumentsMap.put(PSI_ELEMENT, constructPSIMap(psiElement));
         }
 
         if (elementArray != null){
@@ -57,7 +64,7 @@ public class RefactoringListener implements RefactoringEventListener {
 				elementsList.add(constructPSIMap(element));
             }
 
-            argumentsMap.put("elements", elementsList);
+            argumentsMap.put(ELEMENTS, elementsList);
         }
 
         return argumentsMap;
@@ -69,11 +76,11 @@ public class RefactoringListener implements RefactoringEventListener {
 		String canonicalPath = psiElement.getContainingFile().getVirtualFile().getCanonicalPath();
 		String truncatedPath = copeComponent.truncateAbsolutePath(canonicalPath);
 
-		psiMap.put("psiType", psiElement.getClass().getName());
-		psiMap.put("qualified", RecorderPsiUtil.getQualifiedName(psiElement));
-		psiMap.put("file", truncatedPath);
-		psiMap.put("offset", psiElement.getTextOffset() + "");
-		psiMap.put("length", psiElement.getTextLength() + "");
+		psiMap.put(PSI_TYPE, psiElement.getClass().getName());
+		psiMap.put(QUALIFIED, RecorderPsiUtil.getQualifiedName(psiElement));
+		psiMap.put(FILE, truncatedPath);
+		psiMap.put(OFFSET, psiElement.getTextOffset() + "");
+		psiMap.put(LENGTH, psiElement.getTextLength() + "");
 
 		return psiMap;
 	}

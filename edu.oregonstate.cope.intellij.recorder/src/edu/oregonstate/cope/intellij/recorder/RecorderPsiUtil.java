@@ -16,7 +16,10 @@ import java.util.ListIterator;
  * Created by mihai on 5/8/14.
  */
 public class RecorderPsiUtil {
-    public static String getQualifiedName(PsiElement psiElement){
+
+	public static final String NONE = "[none]";
+
+	public static String getQualifiedName(PsiElement psiElement){
 
         if (psiElement instanceof PsiMember)
             return PsiUtil.getMemberQualifiedName((PsiMember) psiElement);
@@ -45,7 +48,7 @@ public class RecorderPsiUtil {
         if(PsiUtilCore.getName(psiElement) != null)
             qualifiedName += PsiUtilCore.getName(psiElement);
         else
-            qualifiedName += "unnamed";
+            qualifiedName += NONE;
 
         return qualifiedName;
     }
