@@ -13,7 +13,7 @@ public class IDEAClientRecorder extends ClientRecorder {
 
     public void recordIDEALaunch(String xmlLaunchString) {
         try {
-            ChangePersister.instance().persist(buildIDEALaunchJSON(xmlLaunchString));
+            changePersister.persist(buildIDEALaunchJSON(xmlLaunchString));
         } catch (RecordException e) {
             COPELogger.getInstance().error(this, "Could not persist IDEA launch", e);
         }

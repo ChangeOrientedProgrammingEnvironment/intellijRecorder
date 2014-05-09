@@ -30,11 +30,8 @@ public class COPEBeforeRunTaskProvider extends BeforeRunTaskProvider<COPEBeforeR
     public static final String EXTENSION_NAME = "COPE Run Recorder";
 
     private Key<COPEBeforeRunTask> launchProvider = new Key<COPEBeforeRunTask>("edu.oregonstate.cope.intellij.launchprovider");
-    private IDEAClientRecorder ideaClientRecorder;
 
     public COPEBeforeRunTaskProvider() {
-        ideaClientRecorder = new IDEAClientRecorder();
-        ideaClientRecorder.setIDE("IDEA");
     }
 
     @Override
@@ -76,6 +73,8 @@ public class COPEBeforeRunTaskProvider extends BeforeRunTaskProvider<COPEBeforeR
     @Override
     public boolean executeTask(DataContext context, final RunConfiguration configuration, ExecutionEnvironment env, COPEBeforeRunTask task) {
         try {
+            IDEAClientRecorder ideaClientRecorder = (IDEAClientRecorder) env.getProject().getComponent(COPEComponent.class).getRecorder().getClientRecorder();
+
             Element element = new Element("launchRecording");
             configuration.writeExternal(element);
             String xmlString = new XMLOutputter().outputString(element);
