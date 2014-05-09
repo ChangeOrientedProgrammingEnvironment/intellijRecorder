@@ -251,9 +251,6 @@ public class COPEComponent implements ProjectComponent {
     public RecorderFacade getRecorder() {
         return recorder;
     }
-    public IntelliJStorageManager getStorageManager() {
-        return storageManager;
-    }
 
     public boolean fileIsInProject(VirtualFile file) {
         ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
