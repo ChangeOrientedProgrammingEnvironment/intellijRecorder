@@ -318,5 +318,7 @@ public class COPEComponent implements ProjectComponent {
         return PluginManager.getPlugin(PluginId.getId(COPEComponent.ID)).getVersion();
     }
 
-
+	public String truncateAbsolutePath(String path) {
+		return path;
+	}
 }

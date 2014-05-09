@@ -68,9 +68,12 @@ public class RefactoringListener implements RefactoringEventListener {
 	private Map constructPSIMap(PsiElement psiElement) {
 		Map psiMap = newMap();
 
+		String canonicalPath = psiElement.getContainingFile().getVirtualFile().getCanonicalPath();
+		String truncatedPath = copeComponent.truncateAbsolutePath(canonicalPath);
+
 		psiMap.put("psiType", psiElement.getClass().getName());
 		psiMap.put("qualified", RecorderPsiUtil.getQualifiedName(psiElement));
-		psiMap.put("file", psiElement.getContainingFile().getVirtualFile().getCanonicalPath());
+		psiMap.put("file", truncatedPath);
 		psiMap.put("offset", psiElement.getTextOffset() + "");
 		psiMap.put("length", psiElement.getTextLength() + "");
 
