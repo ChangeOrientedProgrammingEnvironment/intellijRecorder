@@ -37,7 +37,7 @@ public class RefactoringListener implements RefactoringEventListener {
 
         Map argumentsMap = constructArgumentsMap(refactoringEventData);
 
-        recorder.getClientRecorder().recordRefactoring(s, null);
+        recorder.getClientRecorder().recordRefactoring(s, argumentsMap);
     }
 
     private Map constructArgumentsMap(RefactoringEventData refactoringEventData) {
@@ -48,19 +48,14 @@ public class RefactoringListener implements RefactoringEventListener {
         Map<String, Object> argumentsMap = newMap();
 
         if(psiElement != null){
-            argumentsMap.put("psiElement", RecorderPsiUtil.getQualifiedName(psiElement));
+            argumentsMap.put("psiElement", constructPSIMap(psiElement));
         }
 
         if (elementArray != null){
-            Map<String, Object> elementsArray = newMap();
+            Map<String, Object> elementsMap = newMap();
 
             for (PsiElement element : elementArray){
-                if (element instanceof PsiStatement)
-                    System.err.println("ref arg map not implemented for statements");
-                else if (element instanceof PsiExpression)
-                    System.err.println("ref arg map not implemented for expressions");
-                else
-                    elementsArray.put("element", RecorderPsiUtil.getQualifiedName(element));
+                elementsMap.put("element", constructPSIMap(element));
             }
 
             argumentsMap.put("elements", elementArray);
@@ -69,7 +64,19 @@ public class RefactoringListener implements RefactoringEventListener {
         return argumentsMap;
     }
 
-    private HashMap<String, Object> newMap() {
+	private Map constructPSIMap(PsiElement psiElement) {
+		Map psiMap = newMap();
+
+		psiMap.put("psiType", psiElement.getClass().getName());
+		psiMap.put("qualified", RecorderPsiUtil.getQualifiedName(psiElement));
+		psiMap.put("file", psiElement.getContainingFile().getVirtualFile().getCanonicalPath());
+		psiMap.put("offset", psiElement.getTextOffset() + "");
+		psiMap.put("length", psiElement.getTextLength() + "");
+
+		return psiMap;
+	}
+
+	private HashMap<String, Object> newMap() {
         return new HashMap<String, Object>();
     }
 
@@ -77,7 +84,9 @@ public class RefactoringListener implements RefactoringEventListener {
     public void refactoringDone(@NotNull String s, @Nullable RefactoringEventData refactoringEventData) {
         isRefactorinInProgress = false;
 
-        recorder.getClientRecorder().recordRefactoringEnd(s, null);
+		Map argumentsMap = constructArgumentsMap(refactoringEventData);
+
+        recorder.getClientRecorder().recordRefactoringEnd(s, argumentsMap);
     }
 
     @Override
