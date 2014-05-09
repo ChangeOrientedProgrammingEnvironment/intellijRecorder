@@ -31,9 +31,11 @@ import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTask;
 import edu.oregonstate.cope.intellij.recorder.launch.COPEBeforeRunTaskProvider;
 import edu.oregonstate.cope.intellij.recorder.launch.COPERunManagerListener;
 import edu.oregonstate.cope.intellij.recorder.listeners.*;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -316,6 +318,11 @@ public class COPEComponent implements ProjectComponent {
     }
 
 	public String truncateAbsolutePath(String path) {
-		return path;
+
+        String basePath = project.getBasePath();
+        String difference = StringUtils.difference(basePath, path);
+        String relativeToProject = File.separator + project.getName() + difference;
+
+        return relativeToProject;
 	}
 }
