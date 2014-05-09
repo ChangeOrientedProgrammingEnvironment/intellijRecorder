@@ -85,7 +85,7 @@ public class COPEComponent implements ProjectComponent {
     @Override
     public void projectOpened() {
         storageManager = new IntelliJStorageManager(project);
-        recorder = new RecorderFacade(storageManager, IDE);
+        recorder = new IDEARecorderFacade(storageManager, IDE);
 
         Uninstaller uninstaller = recorder.getUninstaller();
 
@@ -199,7 +199,7 @@ public class COPEComponent implements ProjectComponent {
                 recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
             }
         }else{
-            recorder.getInstallationProperties().addProperty("updateURL","http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
+            recorder.getInstallationProperties().addProperty("updateURL", "http://cope.eecs.oregonstate.edu/IDEARecorder/updatePlugins.xml");
         }
     }
 
