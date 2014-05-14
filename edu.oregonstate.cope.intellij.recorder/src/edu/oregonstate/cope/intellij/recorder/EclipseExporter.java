@@ -86,7 +86,7 @@ public class EclipseExporter {
                 outputStream.close();
             } catch (FileNotFoundException e) {
             } catch (IOException e) {
-                System.out.println("MASSIVE FAILURE ADDING CONTENTS TO THE ZIP FILE");
+                recorder.getLogger().error(this, "MASSIVE FAILURE ADDING CONTENTS TO THE SNAPSHOT ZIP FILE", e);
             }
 
             if (!wasEclipseFriendly) {
@@ -98,7 +98,7 @@ public class EclipseExporter {
         try {
             EclipseUserLibrariesHelper.appendProjectLibraries(project, new File("Libs"));
         } catch (IOException e1) {
-            System.out.println("MASSIVE FAILURE ADDING THE LIBS TO THE PROJECT");
+            recorder.getLogger().error(this, "MASSIVE FAILURE ADDING THE LIBS TO THE PROJECT", e1);
         }
 
         project.save();
@@ -158,7 +158,7 @@ public class EclipseExporter {
         } catch (ConversionException e) {
         } catch (IOException e) {
         } catch (WriteExternalException e) {
-            System.out.println("MASSIVE FAILURE MAKING THE PROJECT ECLIPSE FRIENDLY");
+            recorder.getLogger().error(this, "MASSIVE FAILURE MAKING THE PROJECT ECLIPSE FRIENDLY", e);
         }
     }
 
@@ -174,7 +174,7 @@ public class EclipseExporter {
         try {
             zipFile.createNewFile();
         } catch (IOException e) {
-            System.out.println("MASSIVE FAILURE MAKING THE ZIP FILE");
+            recorder.getLogger().error(this, "MASSIVE FAILURE MAKING THE SNAPSHOT ZIP FILE", e);
         }
         return zipFile;
     }

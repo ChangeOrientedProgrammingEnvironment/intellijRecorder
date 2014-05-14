@@ -100,7 +100,6 @@ public class Survey extends JDialog {
         ActionListener BG1listener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //System.out.println(e.getSource().toString());
                 Q1 = ((JRadioButton)e.getSource()).getText().toString();
             }
         };
@@ -189,11 +188,9 @@ public class Survey extends JDialog {
     }
 
     private void onOK() {
-        System.out.println(areRadioButtonsComplete());
         surveyAnswers = getSurveyResults();
         this.email = getRandomEmailIfAbsent(emailTextField.getText());
-        System.out.println("Email: "+this.email);
-        System.out.println("JSON: "+surveyAnswers);
+
         dispose();
     }
 

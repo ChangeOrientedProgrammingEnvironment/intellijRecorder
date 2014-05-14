@@ -88,7 +88,7 @@ public class TestListener extends TestStatusListener {
 			return testClass.getQualifiedName() + "." + methodLocation.getPsiElement().getName();
 		}
 
-		System.err.println("Is not a MethodLocation: " + location.getClass());
+        logger.error(this, "Test location is not a MethodLocation: " + location.getClass() + ". Test: " + test.getName());
 		return null;
 	}
 
@@ -125,7 +125,7 @@ public class TestListener extends TestStatusListener {
 			return Result.FAILURE;
 		}
 
-		System.err.println("!!! Undefined test state: " + testMagnitude);
+        logger.error(this, "Undefined test state: " + testMagnitude + ". Test: " + test.getName());
 		return Result.UNDEFINED;
 	}
 }
