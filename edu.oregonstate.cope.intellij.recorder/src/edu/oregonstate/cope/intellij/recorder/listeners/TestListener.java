@@ -64,6 +64,11 @@ public class TestListener extends TestStatusListener {
 
 	private void recordTestRun(AbstractTestProxy test) {
 		Project project = getProject(test);
+
+        if (project == null){
+            return;
+        }
+
         COPEComponent copeComponent = project.getComponent(COPEComponent.class);
         LoggerInterface logger = copeComponent.getRecorder().getLogger();
 
