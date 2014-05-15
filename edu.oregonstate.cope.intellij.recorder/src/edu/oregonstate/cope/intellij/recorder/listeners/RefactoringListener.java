@@ -47,11 +47,15 @@ public class RefactoringListener implements RefactoringEventListener {
     }
 
     private Map constructArgumentsMap(RefactoringEventData refactoringEventData) {
-        Collection<UsageInfo> usageInfo = refactoringEventData.getUserData(RefactoringEventData.USAGE_INFOS_KEY);
+        Map<String, Object> argumentsMap = newMap();
+
+        if (refactoringEventData == null) {
+            return argumentsMap;
+        }
+
+        //Collection<UsageInfo> usageInfo = refactoringEventData.getUserData(RefactoringEventData.USAGE_INFOS_KEY);
         PsiElement psiElement = refactoringEventData.getUserData(RefactoringEventData.PSI_ELEMENT_KEY);
         PsiElement[] elementArray = refactoringEventData.getUserData(RefactoringEventData.PSI_ELEMENT_ARRAY_KEY);
-
-        Map<String, Object> argumentsMap = newMap();
 
         if(psiElement != null){
             argumentsMap.put(PSI_ELEMENT, constructPSIMap(psiElement));
