@@ -120,7 +120,7 @@ public class COPEConfigManager implements Configurable {
     public void apply() throws ConfigurationException {
         connectionStatus();
         String newURL = updateSiteField.getText();
-        System.out.println("Apply");
+
         if (!updateURL.isEmpty()) {
             copeComponent.getRecorder().getInstallationProperties().addProperty("updateURL", newURL);
         }

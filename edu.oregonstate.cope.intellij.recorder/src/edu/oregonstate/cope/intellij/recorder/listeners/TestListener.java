@@ -9,6 +9,7 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.rt.execution.junit.states.PoolOfTestStates;
+import edu.oregonstate.cope.clientRecorder.util.LoggerInterface;
 import edu.oregonstate.cope.intellij.recorder.COPEComponent;
 
 /**
@@ -63,12 +64,13 @@ public class TestListener extends TestStatusListener {
 
 	private void recordTestRun(AbstractTestProxy test) {
 		Project project = getProject(test);
+        COPEComponent copeComponent = project.getComponent(COPEComponent.class);
+        LoggerInterface logger = copeComponent.getRecorder().getLogger();
 
-		String qualifiedTestName = constructQualifiedName(test, project);
-		Result testResult = computeTestResult(test);
-		Double testTime = getTestTimeInSeconds(test);
+        String qualifiedTestName = constructQualifiedName(test, project, logger);
+        Result testResult = computeTestResult(test, logger);
+        Double testTime = getTestTimeInSeconds(test);
 
-		COPEComponent copeComponent = project.getComponent(COPEComponent.class);
 		copeComponent.getRecorder().getClientRecorder().recordTestRun(qualifiedTestName, testResult.toString(), testTime);
 	}
 
@@ -76,7 +78,7 @@ public class TestListener extends TestStatusListener {
 		return test.getDuration() / 1000.0;
 	}
 
-	private String constructQualifiedName(AbstractTestProxy test, Project project) {
+	private String constructQualifiedName(AbstractTestProxy test, Project project, LoggerInterface logger) {
 		Location location = getLocation(test, project);
 
 		if (location instanceof MethodLocation) {
@@ -86,7 +88,7 @@ public class TestListener extends TestStatusListener {
 			return testClass.getQualifiedName() + "." + methodLocation.getPsiElement().getName();
 		}
 
-		System.err.println("Is not a MethodLocation: " + location.getClass());
+        logger.error(this, "Test location is not a MethodLocation: " + location.getClass() + ". Test: " + test.getName());
 		return null;
 	}
 
@@ -108,7 +110,7 @@ public class TestListener extends TestStatusListener {
 		return test.getLocation(project, GlobalSearchScope.allScope(project));
 	}
 
-	private Result computeTestResult(AbstractTestProxy test) {
+	private Result computeTestResult(AbstractTestProxy test, LoggerInterface logger) {
 		if (test.isPassed()) {
 			return Result.OK;
 		}
@@ -123,7 +125,7 @@ public class TestListener extends TestStatusListener {
 			return Result.FAILURE;
 		}
 
-		System.err.println("!!! Undefined test state: " + testMagnitude);
+        logger.error(this, "Undefined test state: " + testMagnitude + ". Test: " + test.getName());
 		return Result.UNDEFINED;
 	}
 }

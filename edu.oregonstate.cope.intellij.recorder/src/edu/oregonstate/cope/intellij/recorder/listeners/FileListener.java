@@ -115,7 +115,7 @@ public class FileListener implements VirtualFileListener {
                 return getBinaryFileContents(inputStream);
         } catch (/*CoreException |*/ IOException e) {
             //COPEPlugin.getDefault().getLogger().error(this, "Could not get contents of file", e);
-            System.err.println("Could not get contents of file + " + file.getName());
+            recorderFacade.getLogger().error(this, "Could not get contents of file + " + file.getName(), e);
         }
 
         return "";
