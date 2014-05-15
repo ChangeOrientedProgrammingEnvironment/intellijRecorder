@@ -181,7 +181,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value="&lt;html&gt;Thanks you for participating in the study titled: Understanding TDD Practices.  Please answer just a few demographic questions before you begin using the plugin&lt;/html&gt;"/>
+                      <text value="&lt;html&gt;Thank you for participating in the study titled: Understanding TDD Practices.  Please answer a few demographic questions before you begin using the plugin&lt;/html&gt;"/>
                     </properties>
                   </component>
                   <grid id="d7c8d" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
