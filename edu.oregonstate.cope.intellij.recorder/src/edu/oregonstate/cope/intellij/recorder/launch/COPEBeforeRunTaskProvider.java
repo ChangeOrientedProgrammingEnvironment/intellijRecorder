@@ -76,6 +76,7 @@ public class COPEBeforeRunTaskProvider extends BeforeRunTaskProvider<COPEBeforeR
             IDEAClientRecorder ideaClientRecorder = (IDEAClientRecorder) env.getProject().getComponent(COPEComponent.class).getRecorder().getClientRecorder();
 
             Element element = new Element("launchRecording");
+            element.setAttribute("launchType", configuration.getClass().getCanonicalName());
             configuration.writeExternal(element);
             String xmlString = new XMLOutputter().outputString(element);
             ideaClientRecorder.recordIDEALaunch(xmlString);
