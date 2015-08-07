@@ -2,32 +2,19 @@ package edu.oregonstate.cope.intellij.recorder;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ModuleRootModel;
-import com.intellij.openapi.roots.impl.storage.ClassPathStorageUtil;
 import com.intellij.openapi.roots.impl.storage.ClasspathStorage;
-import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.io.ZipUtil;
 import edu.oregonstate.cope.clientRecorder.RecorderFacade;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.EclipseJDOMUtil;
-import org.jetbrains.idea.eclipse.ConversionException;
-import org.jetbrains.idea.eclipse.EclipseXml;
-import org.jetbrains.idea.eclipse.IdeaXml;
-import org.jetbrains.idea.eclipse.conversion.DotProjectFileHelper;
-import org.jetbrains.idea.eclipse.conversion.EclipseClasspathWriter;
-import org.jetbrains.idea.eclipse.conversion.EclipseUserLibrariesHelper;
-import org.jetbrains.idea.eclipse.conversion.IdeaSpecificSettings;
-import org.jetbrains.jps.eclipse.model.JpsEclipseClasspathSerializer;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.zip.ZipOutputStream;
+
+//import org.jetbrains.idea.eclipse.conversion.EclipseUserLibrariesHelper;
 
 /**
  * This class has a lot of it's contents from
@@ -55,10 +42,10 @@ public class EclipseExporter {
         Module[] modules = ModuleManager.getInstance(project).getModules();
         for (Module module : modules) {
             boolean wasEclipseFriendly = true;
-            if (!isModuleEclipseFriendly(module)) {
-                makeModuleEclipseFriendly(module);
-                wasEclipseFriendly = false;
-            }
+//            if (!isModuleEclipseFriendly(module)) {
+//                makeModuleEclipseFriendly(module);
+//                wasEclipseFriendly = false;
+//            }
             String storageRoot = getStorageRoot(module);
             File zipFile = createZipFile(module.getName(), localStorage);
 
@@ -95,11 +82,11 @@ public class EclipseExporter {
             }
         }
 
-        try {
-            EclipseUserLibrariesHelper.appendProjectLibraries(project, new File("Libs"));
-        } catch (IOException e1) {
-            recorder.getLogger().error(this, "MASSIVE FAILURE ADDING THE LIBS TO THE PROJECT", e1);
-        }
+//        try {
+//            EclipseUserLibrariesHelper.appendProjectLibraries(project, new File("Libs"));
+//        } catch (IOException e1) {
+//            recorder.getLogger().error(this, "MASSIVE FAILURE ADDING THE LIBS TO THE PROJECT", e1);
+//        }
 
         project.save();
     }
@@ -126,41 +113,41 @@ public class EclipseExporter {
         return Paths.get(storageRoot, ".classpath").toFile();
     }
 
-
-    private void makeModuleEclipseFriendly(Module module) {
-        if (!JpsEclipseClasspathSerializer.CLASSPATH_STORAGE_ID.equals(ClassPathStorageUtil.getStorageType(module))) {
-            try {
-                ClasspathStorage.getProvider(JpsEclipseClasspathSerializer.CLASSPATH_STORAGE_ID).assertCompatible(ModuleRootManager.getInstance(module));
-            } catch (ConfigurationException e1) {
-                return;
-            }
-        }
-
-        final ModuleRootModel model = ModuleRootManager.getInstance(module);
-        final String storageRoot = getStorageRoot(module);
-        try {
-            final Element classpathElement = new Element(EclipseXml.CLASSPATH_TAG);
-
-            final EclipseClasspathWriter classpathWriter = new EclipseClasspathWriter(model);
-            classpathWriter.writeClasspath(classpathElement, null);
-            final File classpathFile = new File(storageRoot, EclipseXml.CLASSPATH_FILE);
-            if (!FileUtil.createIfDoesntExist(classpathFile)) return;
-            EclipseJDOMUtil.output(new Document(classpathElement), classpathFile, project);
-
-            final Element ideaSpecific = new Element(IdeaXml.COMPONENT_TAG);
-            if (IdeaSpecificSettings.writeIDEASpecificClasspath(ideaSpecific, model)) {
-                final File emlFile = new File(storageRoot, module.getName() + EclipseXml.IDEA_SETTINGS_POSTFIX);
-                if (!FileUtil.createIfDoesntExist(emlFile)) return;
-                EclipseJDOMUtil.output(new Document(ideaSpecific), emlFile, project);
-            }
-
-            DotProjectFileHelper.saveDotProjectFile(module, storageRoot);
-        } catch (ConversionException e) {
-        } catch (IOException e) {
-        } catch (WriteExternalException e) {
-            recorder.getLogger().error(this, "MASSIVE FAILURE MAKING THE PROJECT ECLIPSE FRIENDLY", e);
-        }
-    }
+//    private void makeModuleEclipseFriendly(Module module) {
+//        if (!JpsEclipseClasspathSerializer.CLASSPATH_STORAGE_ID.equals(ClassPathStorageUtil.getStorageType(module))) {
+//            try {
+//                ClasspathStorage.getProvider(JpsEclipseClasspathSerializer.CLASSPATH_STORAGE_ID).assertCompatible(ModuleRootManager.getInstance(module));
+//            } catch (ConfigurationException e1) {
+//                return;
+//            }
+//        }
+//
+//
+//        final ModuleRootModel model = ModuleRootManager.getInstance(module);
+//        final String storageRoot = getStorageRoot(module);
+//        try {
+//            final Element classpathElement = new Element(EclipseXml.CLASSPATH_TAG);
+//
+//            final EclipseClasspathWriter classpathWriter = new EclipseClasspathWriter(model);
+//            classpathWriter.writeClasspath(classpathElement, null);
+//            final File classpathFile = new File(storageRoot, EclipseXml.CLASSPATH_FILE);
+//            if (!FileUtil.createIfDoesntExist(classpathFile)) return;
+//            EclipseJDOMUtil.output(new Document(classpathElement), classpathFile, project);
+//
+//            final Element ideaSpecific = new Element(IdeaXml.COMPONENT_TAG);
+//            if (IdeaSpecificSettings.writeIdeaSpecificClasspath(ideaSpecific, model)) {
+//                final File emlFile = new File(storageRoot, module.getName() + EclipseXml.IDEA_SETTINGS_POSTFIX);
+//                if (!FileUtil.createIfDoesntExist(emlFile)) return;
+//                EclipseJDOMUtil.output(new Document(ideaSpecific), emlFile, project);
+//            }
+//
+//            DotProjectFileHelper.saveDotProjectFile(module, storageRoot);
+//        } catch (InspectionsReportConverter.ConversionException e) {
+//        } catch (IOException e) {
+//        } catch (WriteExternalException e) {
+//            recorder.getLogger().error(this, "MASSIVE FAILURE MAKING THE PROJECT ECLIPSE FRIENDLY", e);
+//        }
+//    }
 
     private String getStorageRoot(Module module) {
         final ModuleRootModel model = ModuleRootManager.getInstance(module);
